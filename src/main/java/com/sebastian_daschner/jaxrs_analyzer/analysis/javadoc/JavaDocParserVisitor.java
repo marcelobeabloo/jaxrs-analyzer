@@ -156,7 +156,8 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
 
     private Map<Integer, String> createResponseComments(Javadoc javadoc) {
         return javadoc.getBlockTags().stream()
-                .filter(t -> ResponseCommentExtractor.RESPONSE_TAG_NAME.equalsIgnoreCase(t.getTagName()))
+                .filter(t -> ResponseCommentExtractor.RESPONSE_TAG_NAME.equalsIgnoreCase(t.getTagName())
+                           || ResponseCommentExtractor.RETURN_TAG_NAME.equalsIgnoreCase(t.getTagName()))
                 .map(t -> t.getContent().toText())
                 .map(ResponseCommentExtractor::extract)
                 .filter(Objects::nonNull)

@@ -9,6 +9,7 @@ class ResponseCommentExtractor {
     }
 
     static final String RESPONSE_TAG_NAME = "response";
+    static final String RETURN_TAG_NAME = "return";
 
     static Pair<Integer, String> extract(String comment) {
         try {
@@ -19,8 +20,15 @@ class ResponseCommentExtractor {
         } catch (Exception e) {
             LogProvider.info("Warning: malformed @response JavaDoc tag: '@response " + comment + "'");
             LogProvider.debug(e);
-            return null;
+            return extractByReturnAnnotation(comment);
         }
     }
+
+    static Pair<Integer, String> extractByReturnAnnotation(String comment) {
+        String commentText = comment.trim();
+        int status = 200;
+        return Pair.of(status, commentText);
+    }
+
 
 }

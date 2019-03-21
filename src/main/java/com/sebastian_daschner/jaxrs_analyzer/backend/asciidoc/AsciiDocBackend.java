@@ -50,9 +50,15 @@ public class AsciiDocBackend extends StringBackend {
             builder.append(resourceMethod.getRequestMediaTypes().isEmpty() ? TYPE_WILDCARD : toString(resourceMethod.getRequestMediaTypes()));
             builder.append("` + \n");
 
-            builder.append("*Request Body*: (").append(toTypeOrCollection(resourceMethod.getRequestBody())).append(")");
+            builder.append("*Request Body*: (").append(toTypeOrCollection(resourceMethod.getRequestBody()));
+            if (resourceMethod.getRequestBodyDescription() != null) {
+                builder.append(" - ").append(resourceMethod.getRequestBodyDescription());
+            }
+            builder.append(")");
+
             Optional.ofNullable(resources.getTypeRepresentations().get(resourceMethod.getRequestBody())).ifPresent(
                     this::generateSample);
+
             builder.append("\n");
         } else {
             builder.append("_No body_ + \n");
@@ -79,8 +85,9 @@ public class AsciiDocBackend extends StringBackend {
                 .append(p.getName())
                 .append("`, `")
                 .append(toReadableType(p.getType().getType()))
-                // TODO add default value
-                .append("` + \n"));
+                .append("` + \n")
+                .append(p.getDescription() != null ? "*Description*: " + p.getDescription() + "` + \n" : ""));
+
     }
 
     @Override
@@ -102,6 +109,10 @@ public class AsciiDocBackend extends StringBackend {
                 Optional.ofNullable(resources.getTypeRepresentations().get(response.getResponseBody())).ifPresent(
                         this::generateSample);
                 builder.append("\n");
+            }
+
+            if (e.getValue().getDescription() != null) {
+                builder.append("*Description*: ").append(e.getValue().getDescription());
             }
 
             builder.append('\n');

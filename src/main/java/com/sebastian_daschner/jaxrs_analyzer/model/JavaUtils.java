@@ -281,7 +281,17 @@ public final class JavaUtils {
         final SignatureReader reader = new SignatureReader(type);
         final TraceSignatureVisitor visitor = new TraceSignatureVisitor(0);
         reader.acceptType(visitor);
-        return visitor.getDeclaration();
+        String declaration = visitor.getDeclaration();
+
+        if (("true").equals(System.getProperty("simpleType"))) {
+            //return single type
+            if(declaration.indexOf(".") != declaration.lastIndexOf(".")) {
+                declaration = declaration.substring(declaration.lastIndexOf(".") + 1 , declaration.length());
+            }
+        }
+
+        return declaration;
+
     }
 
     /**
