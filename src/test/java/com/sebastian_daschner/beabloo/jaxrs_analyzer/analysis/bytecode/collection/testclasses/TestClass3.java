@@ -26,7 +26,6 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.ReturnIn
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.SizeChangingInstruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.StoreInstruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.MethodIdentifier;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.*;
 
 import java.util.LinkedList;
 import java.util.List;

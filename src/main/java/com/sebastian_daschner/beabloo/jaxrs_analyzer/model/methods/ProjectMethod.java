@@ -17,8 +17,8 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods;
 
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.simulation.InjectableArgumentMethodSimulator;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.Instruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.Element;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.Instruction;
 
 import java.util.List;
 

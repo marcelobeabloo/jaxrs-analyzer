@@ -22,7 +22,6 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.DupInstr
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.Instruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.PushInstruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.StoreInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.*;
 
 import java.util.LinkedList;
 import java.util.List;

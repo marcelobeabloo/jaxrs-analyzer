@@ -17,6 +17,7 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode;
 
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.LogProvider;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.reduction.RelevantInstructionReducer;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.ContextClassReader;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.ProjectMethodClassVisitor;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.Instruction;
@@ -24,7 +25,6 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.InvokeIn
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.MethodIdentifier;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.ProjectMethod;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.MethodResult;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.reduction.RelevantInstructionReducer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 

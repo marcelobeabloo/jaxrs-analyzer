@@ -1,13 +1,10 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.backend.markdown;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.results.TypeUtils;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.backend.Backend;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.backend.StringBackend;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.ResourceMethodBuilder;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.ResourcesBuilder;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.ResponseBuilder;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.HttpMethod;
@@ -19,11 +16,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.ResourceMethodBuilder;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.ResourcesBuilder;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import static java.util.Collections.singletonMap;
-
 import static org.junit.Assert.assertEquals;
 
 

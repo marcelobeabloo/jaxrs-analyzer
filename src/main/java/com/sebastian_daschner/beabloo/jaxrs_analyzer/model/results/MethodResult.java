@@ -17,11 +17,11 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results;
 
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.HttpResponse;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.Instruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.javadoc.MethodComment;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.MethodIdentifier;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.HttpMethod;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.MethodParameter;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.Instruction;
 
 import java.util.ArrayList;
 import java.util.HashSet;

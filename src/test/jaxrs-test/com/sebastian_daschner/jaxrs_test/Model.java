@@ -16,8 +16,6 @@
 
 package com.sebastian_daschner.jaxrs_test;
 
-import javax.persistence.*;
-
 /**
  * These sources are solely used for test purposes and not meant for deployment.
  */

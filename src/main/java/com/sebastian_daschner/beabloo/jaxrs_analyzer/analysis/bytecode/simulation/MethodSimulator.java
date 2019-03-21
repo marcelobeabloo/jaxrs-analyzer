@@ -32,12 +32,16 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.SizeChan
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.StoreInstruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.Method;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.MethodIdentifier;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.*;
 import org.objectweb.asm.Label;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;

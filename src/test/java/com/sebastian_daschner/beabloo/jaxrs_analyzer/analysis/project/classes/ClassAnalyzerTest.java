@@ -17,12 +17,12 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.project.classes;
 
 
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.BytecodeAnalyzer;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.ContextClassReader;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.JAXRSClassVisitor;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.utils.TestClassUtils;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.ClassResult;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.BytecodeAnalyzer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

@@ -1,5 +1,6 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes;
 
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.LogProvider;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.annotation.ConsumesAnnotationVisitor;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.annotation.DefaultValueAnnotationVisitor;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.annotation.ParamAnnotationVisitor;
@@ -11,8 +12,6 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.MethodParameter;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.ParameterType;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.MethodResult;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.LogProvider;
-import com.sebastian_daschner.jaxrs_analyzer.analysis.classes.annotation.*;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 

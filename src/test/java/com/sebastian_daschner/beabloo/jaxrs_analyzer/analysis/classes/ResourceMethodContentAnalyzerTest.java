@@ -17,9 +17,9 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes;
 
 
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.utils.TestClassUtils;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.LogProvider;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.BytecodeAnalyzer;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.utils.TestClassUtils;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.HttpResponse;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.MethodIdentifier;

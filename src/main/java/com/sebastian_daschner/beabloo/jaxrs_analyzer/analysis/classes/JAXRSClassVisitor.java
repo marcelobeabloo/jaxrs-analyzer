@@ -1,22 +1,37 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes;
 
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.JavaUtils;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.Types;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.MethodIdentifier;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.ClassResult;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.MethodResult;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.LogProvider;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.annotation.ApplicationPathAnnotationVisitor;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.annotation.ConsumesAnnotationVisitor;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.annotation.PathAnnotationVisitor;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.annotation.ProducesAnnotationVisitor;
-import org.objectweb.asm.*;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.JavaUtils;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.Types;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.MethodIdentifier;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.ClassResult;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.MethodResult;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Stream;
 

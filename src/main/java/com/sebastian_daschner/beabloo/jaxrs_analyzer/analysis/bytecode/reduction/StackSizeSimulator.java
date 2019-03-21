@@ -19,7 +19,11 @@ package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.reductio
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.Instruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.utils.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

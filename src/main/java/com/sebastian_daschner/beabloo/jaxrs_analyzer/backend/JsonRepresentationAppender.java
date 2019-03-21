@@ -1,14 +1,14 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.backend;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeRepresentation;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeRepresentationVisitor;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Adds the JSON representation of type identifiers to String builders.

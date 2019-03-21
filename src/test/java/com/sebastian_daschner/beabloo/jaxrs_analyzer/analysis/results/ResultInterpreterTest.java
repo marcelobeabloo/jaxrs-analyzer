@@ -30,8 +30,6 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeRepresentation;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.ClassResult;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.MethodResult;
-import com.sebastian_daschner.jaxrs_analyzer.builder.*;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -17,13 +17,13 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.project.classes.testclasses;
 
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.ClassResultBuilder;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.HttpResponseBuilder;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.MethodResultBuilder;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.Element;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.HttpMethod;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.ClassResult;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.MethodResult;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.HttpResponseBuilder;
 
 import javax.json.Json;
 import javax.json.JsonObject;

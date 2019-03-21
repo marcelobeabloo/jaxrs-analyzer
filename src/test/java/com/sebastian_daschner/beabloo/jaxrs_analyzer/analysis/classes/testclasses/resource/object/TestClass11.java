@@ -1,7 +1,7 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.testclasses.resource.object;
 
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.HttpResponseBuilder;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.HttpResponse;
 
 import java.util.Collections;

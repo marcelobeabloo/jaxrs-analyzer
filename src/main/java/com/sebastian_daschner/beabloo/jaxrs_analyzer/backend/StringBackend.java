@@ -7,9 +7,13 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.Resources;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeRepresentation;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeRepresentationVisitor;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 
-import javax.json.*;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonStructure;
+import javax.json.JsonValue;
+import javax.json.JsonWriter;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonGenerator;
 import java.io.StringReader;

@@ -19,7 +19,15 @@ package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.reductio
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.Instruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.LoadInstruction;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;

@@ -6,7 +6,12 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeRepresentati
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class TestClass16 extends SuperTestClass2 {
 

@@ -16,8 +16,8 @@
 
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods;
 
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.InvokeInstruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.Element;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.InvokeInstruction;
 
 import java.util.List;
 

@@ -16,6 +16,8 @@
 
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode;
 
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.simulation.MethodPool;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.simulation.MethodSimulator;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.Element;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.HttpResponse;
@@ -23,8 +25,6 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.JsonValue;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.Instruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.ProjectMethod;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.MethodResult;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.simulation.MethodPool;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.simulation.MethodSimulator;
 
 import java.util.List;
 import java.util.Set;

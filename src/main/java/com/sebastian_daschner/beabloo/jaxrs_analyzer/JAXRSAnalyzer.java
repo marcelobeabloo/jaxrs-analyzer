@@ -1,15 +1,19 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer;
 
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.ProjectAnalyzer;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.backend.Backend;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.Project;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.Resources;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.ProjectAnalyzer;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.stream.StreamSupport;
 
 /**

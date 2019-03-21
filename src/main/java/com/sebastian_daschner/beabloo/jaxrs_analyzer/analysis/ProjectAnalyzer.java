@@ -16,16 +16,16 @@
 
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis;
 
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.JavaUtils;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.Resources;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.ClassResult;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.utils.Pair;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.LogProvider;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.BytecodeAnalyzer;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.ContextClassReader;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.JAXRSClassVisitor;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.javadoc.JavaDocAnalyzer;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.results.ResultInterpreter;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.JavaUtils;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.Resources;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.ClassResult;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.utils.Pair;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 

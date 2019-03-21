@@ -1,9 +1,9 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes;
 
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.LogProvider;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.MethodIdentifier;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.MethodResult;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.LogProvider;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;

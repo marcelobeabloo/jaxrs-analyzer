@@ -1,11 +1,11 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.results;
 
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.ClassResultBuilder;
+import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.HttpResponseBuilder;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.MethodResultBuilder;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.HttpMethod;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.ClassResult;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.MethodResult;
-import com.sebastian_daschner.beabloo.jaxrs_analyzer.builder.HttpResponseBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

@@ -4,7 +4,11 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.HttpResponse
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 public class TestClass7 {
 

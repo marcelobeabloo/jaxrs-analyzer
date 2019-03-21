@@ -24,9 +24,12 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.Project;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.ResourceMethod;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.Resources;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.utils.StringUtils;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;

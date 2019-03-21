@@ -2,7 +2,11 @@ package com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.classes.testclass
 
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.elements.HttpResponse;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 public class TestClass6 {
 

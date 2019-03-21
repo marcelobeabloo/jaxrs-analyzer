@@ -1,9 +1,5 @@
 package com.sebastian_daschner.beabloo.jaxrs_analyzer.backend.asciidoc;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.backend.ComparatorUtils;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.backend.StringBackend;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.JavaUtils;
@@ -15,6 +11,10 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.Response;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.rest.TypeRepresentation;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.utils.StringUtils;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A backend implementation which produces an AsciiDoc representation of the JAX-RS project.

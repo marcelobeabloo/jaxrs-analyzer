@@ -28,7 +28,6 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.SizeChan
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.StoreInstruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.ThrowInstruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.methods.MethodIdentifier;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.*;
 
 import javax.ws.rs.core.Response;
 import java.util.LinkedList;

@@ -10,13 +10,16 @@ import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.PushInst
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.SizeChangingInstruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.instructions.StoreInstruction;
 import com.sebastian_daschner.beabloo.jaxrs_analyzer.model.results.MethodResult;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.*;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.sebastian_daschner.beabloo.jaxrs_analyzer.analysis.bytecode.collection.InstructionBuilder.*;
