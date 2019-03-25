@@ -18,11 +18,7 @@ package com.sebastian_daschner.jaxrs_analyzer.model.rest;
 
 import com.sebastian_daschner.jaxrs_analyzer.utils.StringUtils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

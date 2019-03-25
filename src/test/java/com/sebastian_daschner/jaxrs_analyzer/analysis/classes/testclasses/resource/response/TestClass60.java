@@ -20,12 +20,7 @@ import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.HttpResponse;
 
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class TestClass60 {
 

@@ -29,6 +29,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier.ofNonStatic;
+import static com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier.ofStatic;
+
 /**
  * @author Sebastian Daschner
  */
@@ -174,9 +177,9 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
         String returnType = method.getType().asString().replace('.', '/');
 
         if (method.isStatic()) {
-            return MethodIdentifier.ofStatic(className, method.getNameAsString(), returnType, parameters);
+            return ofStatic(className, method.getNameAsString(), returnType, parameters);
         }
-        return MethodIdentifier.ofNonStatic(className, method.getNameAsString(), returnType, parameters);
+        return ofNonStatic(className, method.getNameAsString(), returnType, parameters);
     }
 
 }

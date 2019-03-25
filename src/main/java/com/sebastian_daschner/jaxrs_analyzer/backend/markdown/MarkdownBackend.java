@@ -1,8 +1,10 @@
 package com.sebastian_daschner.jaxrs_analyzer.backend.markdown;
 
-import com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend;
-import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.MethodParameter;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.ParameterType;
@@ -12,9 +14,9 @@ import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
 import com.sebastian_daschner.jaxrs_analyzer.utils.StringUtils;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.mapKeyComparator;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.parameterComparator;
+import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.toReadableType;
 
 
 /**
@@ -71,13 +73,13 @@ public class MarkdownBackend extends StringBackend {
 
     private void appendParams(final String name, final Set<MethodParameter> parameters, final ParameterType parameterType) {
         parameters.stream().filter(p -> p.getParameterType() == parameterType)
-                .sorted(ComparatorUtils.parameterComparator()).forEach(p -> builder
+                .sorted(parameterComparator()).forEach(p -> builder
                 .append('*')
                 .append(name)
                 .append("*: `")
                 .append(p.getName())
                 .append("`, `")
-                .append(JavaUtils.toReadableType(p.getType().getType()))
+                .append(toReadableType(p.getType().getType()))
                 // TODO add default value
                 .append("` + \n"));
     }
@@ -90,7 +92,7 @@ public class MarkdownBackend extends StringBackend {
         builder.append(resourceMethod.getResponseMediaTypes().isEmpty() ? TYPE_WILDCARD : toString(resourceMethod.getResponseMediaTypes()));
         builder.append("`\n\n");
 
-        resourceMethod.getResponses().entrySet().stream().sorted(ComparatorUtils.mapKeyComparator()).forEach(e -> {
+        resourceMethod.getResponses().entrySet().stream().sorted(mapKeyComparator()).forEach(e -> {
             builder.append("#### `").append(e.getKey()).append(' ')
                     .append(javax.ws.rs.core.Response.Status.fromStatusCode(e.getKey()).getReasonPhrase()).append("`\n");
             final Response response = e.getValue();
@@ -118,7 +120,7 @@ public class MarkdownBackend extends StringBackend {
         if (representation != null && !representation.getComponentType().equals(type) && !type.getType().equals(Types.JSON)) {
             return "Collection of `" + toReadableComponentType(representation.getComponentType()) + '`';
         }
-        return '`' + JavaUtils.toReadableType(type.getType()) + '`';
+        return '`' + toReadableType(type.getType()) + '`';
     }
 
     private static String toString(final Set<String> set) {

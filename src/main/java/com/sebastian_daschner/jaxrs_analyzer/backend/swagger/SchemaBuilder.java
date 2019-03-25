@@ -16,8 +16,6 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.backend.swagger;
 
-import com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils;
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentationVisitor;
@@ -29,6 +27,9 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.mapKeyComparator;
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
 
 /**
  * Creates Swagger schema type definitions.
@@ -131,7 +132,7 @@ class SchemaBuilder {
      */
     JsonObject getDefinitions() {
         final JsonObjectBuilder builder = Json.createObjectBuilder();
-        jsonDefinitions.entrySet().stream().sorted(ComparatorUtils.mapKeyComparator()).forEach(e -> builder.add(e.getKey(), e.getValue().getRight()));
+        jsonDefinitions.entrySet().stream().sorted(mapKeyComparator()).forEach(e -> builder.add(e.getKey(), e.getValue().getRight()));
         return builder.build();
     }
 
@@ -163,7 +164,7 @@ class SchemaBuilder {
 
         final JsonObjectBuilder nestedBuilder = Json.createObjectBuilder();
 
-        properties.entrySet().stream().sorted(ComparatorUtils.mapKeyComparator()).forEach(e -> nestedBuilder.add(e.getKey(), build(e.getValue())));
+        properties.entrySet().stream().sorted(mapKeyComparator()).forEach(e -> nestedBuilder.add(e.getKey(), build(e.getValue())));
         jsonDefinitions.put(definition, Pair.of(identifier.getName(), Json.createObjectBuilder().add("properties", nestedBuilder).build()));
 
         builder.add("$ref", "#/definitions/" + definition);
@@ -180,16 +181,16 @@ class SchemaBuilder {
      * @return The Swagger type
      */
     private static SwaggerType toSwaggerType(final String type) {
-        if (Types.INTEGER_TYPES.contains(type))
+        if (INTEGER_TYPES.contains(type))
             return SwaggerType.INTEGER;
 
-        if (Types.DOUBLE_TYPES.contains(type))
+        if (DOUBLE_TYPES.contains(type))
             return SwaggerType.NUMBER;
 
-        if (Types.BOOLEAN.equals(type) || Types.PRIMITIVE_BOOLEAN.equals(type))
+        if (BOOLEAN.equals(type) || PRIMITIVE_BOOLEAN.equals(type))
             return SwaggerType.BOOLEAN;
 
-        if (Types.STRING.equals(type))
+        if (STRING.equals(type))
             return SwaggerType.STRING;
 
         return SwaggerType.OBJECT;

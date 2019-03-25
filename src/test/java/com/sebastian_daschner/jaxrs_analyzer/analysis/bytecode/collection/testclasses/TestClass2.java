@@ -17,12 +17,7 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.bytecode.collection.testclasses;
 
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.DefaultInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.DupInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.Instruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.PushInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.SizeChangingInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.StoreInstruction;
+import com.sebastian_daschner.jaxrs_analyzer.model.instructions.*;
 
 import java.util.LinkedList;
 import java.util.List;

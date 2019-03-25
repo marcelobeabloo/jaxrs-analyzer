@@ -1,14 +1,28 @@
 package com.sebastian_daschner.jaxrs_analyzer.backend;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentationVisitor;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.mapKeyComparator;
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.BOOLEAN;
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.DOUBLE_TYPES;
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.INTEGER_TYPES;
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.PRIMITIVE_BOOLEAN;
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.STRING;
+import static java.util.Collections.singletonMap;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.json.JsonReader;
+import javax.json.JsonWriter;
+import javax.json.spi.JsonProvider;
+import javax.json.stream.JsonGenerator;
+
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentationVisitor;
 
 /**
  * Adds the JSON representation of type identifiers to String builders.
@@ -34,7 +48,7 @@ class JsonRepresentationAppender implements TypeRepresentationVisitor {
         else {
             builder.append('{');
             visitedTypes.add(representation.getIdentifier());
-            representation.getProperties().entrySet().stream().sorted(ComparatorUtils.mapKeyComparator()).forEach(e -> {
+            representation.getProperties().entrySet().stream().sorted(mapKeyComparator()).forEach(e -> {
                 builder.append('"').append(e.getKey()).append("\":");
                 final TypeRepresentation nestedRepresentation = representations.get(e.getValue());
                 if (nestedRepresentation == null)
@@ -71,16 +85,16 @@ class JsonRepresentationAppender implements TypeRepresentationVisitor {
 
     private static String toPrimitiveType(final TypeIdentifier value) {
         final String type = value.getType();
-        if (Types.STRING.equals(type))
+        if (STRING.equals(type))
             return "\"string\"";
 
-        if (Types.BOOLEAN.equals(type) || Types.PRIMITIVE_BOOLEAN.equals(type))
+        if (BOOLEAN.equals(type) || PRIMITIVE_BOOLEAN.equals(type))
             return "false";
 
-        if (Types.INTEGER_TYPES.contains(type))
+        if (INTEGER_TYPES.contains(type))
             return "0";
 
-        if (Types.DOUBLE_TYPES.contains(type))
+        if (DOUBLE_TYPES.contains(type))
             return "0.0";
 
         return "{}";

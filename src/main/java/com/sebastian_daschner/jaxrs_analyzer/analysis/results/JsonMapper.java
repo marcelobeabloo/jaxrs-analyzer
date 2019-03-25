@@ -16,7 +16,6 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.Element;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.JsonArray;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.JsonObject;
@@ -27,6 +26,8 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import java.util.Set;
 import java.util.function.Function;
+
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
 
 /**
  * Creates JSON-P Json objects from the internal {@link JsonValue}s and maps JSON types.
@@ -59,19 +60,19 @@ final class JsonMapper {
     }
 
     private static void addToArray(final JsonArrayBuilder builder, final Element value) {
-        if (value.getTypes().contains(Types.STRING))
+        if (value.getTypes().contains(STRING))
             builder.add("string");
 
-        if (value.getTypes().stream().anyMatch(Types.INTEGER_TYPES::contains))
+        if (value.getTypes().stream().anyMatch(INTEGER_TYPES::contains))
             builder.add(0);
 
-        if (value.getTypes().stream().anyMatch(Types.DOUBLE_TYPES::contains))
+        if (value.getTypes().stream().anyMatch(DOUBLE_TYPES::contains))
             builder.add(0.0);
 
-        if (value.getTypes().contains(Types.BOOLEAN) || value.getTypes().contains(Types.PRIMITIVE_BOOLEAN))
+        if (value.getTypes().contains(BOOLEAN) || value.getTypes().contains(PRIMITIVE_BOOLEAN))
             builder.add(false);
 
-        if (value.getTypes().stream().anyMatch(Types.JSON_TYPES::contains))
+        if (value.getTypes().stream().anyMatch(JSON_TYPES::contains))
             value.getPossibleValues().stream().filter(v -> v instanceof JsonValue).findFirst().ifPresent(v -> builder.add(map((JsonValue) v)));
     }
 
@@ -83,7 +84,7 @@ final class JsonMapper {
 
     private static void addToObject(final JsonObjectBuilder builder, final String key, final Element value) {
         // handle nested JSON
-        if (value.getTypes().stream().anyMatch(Types.JSON_TYPES::contains)) {
+        if (value.getTypes().stream().anyMatch(JSON_TYPES::contains)) {
             value.getPossibleValues().stream().filter(v -> v instanceof JsonValue).findFirst().ifPresent(v -> builder.add(key, map((JsonValue) v)));
             return;
         }
@@ -92,27 +93,27 @@ final class JsonMapper {
     }
 
     private static void addToObject(final JsonObjectBuilder builder, final String key, final Set<String> types) {
-        if (types.contains(Types.STRING))
+        if (types.contains(STRING))
             builder.add(key, "string");
 
-        if (types.stream().anyMatch(Types.INTEGER_TYPES::contains))
+        if (types.stream().anyMatch(INTEGER_TYPES::contains))
             builder.add(key, 0);
 
-        if (types.stream().anyMatch(Types.DOUBLE_TYPES::contains))
+        if (types.stream().anyMatch(DOUBLE_TYPES::contains))
             builder.add(key, 0.0);
 
-        if (types.contains(Types.BOOLEAN) || types.contains(Types.PRIMITIVE_BOOLEAN))
+        if (types.contains(BOOLEAN) || types.contains(PRIMITIVE_BOOLEAN))
             builder.add(key, false);
     }
 
     // TODO remove unused code, refactor & test types (e.g. Date, JSR-310)
     static void addToObject(final JsonObjectBuilder builder, final String key, final String type, final Function<String, javax.json.JsonValue> defaultBehavior) {
-        if (Types.STRING.equals(type)) {
+        if (STRING.equals(type)) {
             builder.add(key, "string");
             return;
         }
 
-        if (Types.BOOLEAN.equals(type) || Types.PRIMITIVE_BOOLEAN.equals(type)) {
+        if (BOOLEAN.equals(type) || PRIMITIVE_BOOLEAN.equals(type)) {
             builder.add(key, false);
             return;
         }
@@ -144,12 +145,12 @@ final class JsonMapper {
     }
 
     static void addToArray(final JsonArrayBuilder builder, final String type, final Function<String, javax.json.JsonValue> defaultBehavior) {
-        if (Types.STRING.equals(type)) {
+        if (STRING.equals(type)) {
             builder.add("string");
             return;
         }
 
-        if (Types.BOOLEAN.equals(type) || Types.PRIMITIVE_BOOLEAN.equals(type)) {
+        if (BOOLEAN.equals(type) || PRIMITIVE_BOOLEAN.equals(type)) {
             builder.add(false);
             return;
         }

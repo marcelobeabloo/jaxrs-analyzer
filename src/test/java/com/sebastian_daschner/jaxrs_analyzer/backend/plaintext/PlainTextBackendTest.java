@@ -1,8 +1,15 @@
 package com.sebastian_daschner.jaxrs_analyzer.backend.plaintext;
 
-import com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
 import com.sebastian_daschner.jaxrs_analyzer.backend.Backend;
-import com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourceMethodBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourcesBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResponseBuilder;
@@ -12,17 +19,13 @@ import com.sebastian_daschner.jaxrs_analyzer.model.rest.Project;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.Resources;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+
 import static org.junit.Assert.assertEquals;
+
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.MODEL_IDENTIFIER;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend.INLINE_PRETTIFY;
 
 @RunWith(Parameterized.class)
 public class PlainTextBackendTest {
@@ -40,7 +43,7 @@ public class PlainTextBackendTest {
     @Test
     public void test() {
         final Project project = new Project("project name", "1.0", resources);
-        cut.configure(singletonMap(StringBackend.INLINE_PRETTIFY, "false"));
+        cut.configure(singletonMap(INLINE_PRETTIFY, "false"));
         final String actualOutput = new String(cut.render(project));
         assertEquals(expectedOutput, actualOutput);
     }
@@ -153,9 +156,9 @@ public class PlainTextBackendTest {
         properties.put("name", stringIdentifier);
         properties.put("value", intIdentifier);
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(TypeUtils.MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(TypeUtils.MODEL_IDENTIFIER, properties))
+                        .andTypeRepresentation(MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties))
                         .andResource("res6", ResourceMethodBuilder.withMethod(HttpMethod.GET)
-                                .andResponse(200, ResponseBuilder.withResponseBody(TypeUtils.MODEL_IDENTIFIER).build()).build()).build(),
+                                .andResponse(200, ResponseBuilder.withResponseBody(MODEL_IDENTIFIER).build()).build()).build(),
                 "REST resources of project name:\n" +
                         "1.0\n" +
                         "\n" +
@@ -174,7 +177,7 @@ public class PlainTextBackendTest {
         properties.put("name", stringIdentifier);
         properties.put("value", intIdentifier);
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(TypeUtils.MODEL_IDENTIFIER, properties)))
+                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties)))
                         .andResource("res7", ResourceMethodBuilder.withMethod(HttpMethod.GET)
                                 .andResponse(200, ResponseBuilder.withResponseBody(identifier).build()).build()).build(),
                 "REST resources of project name:\n" +
@@ -191,8 +194,8 @@ public class PlainTextBackendTest {
                         "    [{\"name\":\"string\",\"value\":0}]\n\n\n");
 
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(TypeUtils.MODEL_IDENTIFIER, properties)))
-                        .andResource("res8", ResourceMethodBuilder.withMethod(HttpMethod.POST).andRequestBodyType(identifier).andFormParam("form", TypeUtils.MODEL_IDENTIFIER.getType())
+                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties)))
+                        .andResource("res8", ResourceMethodBuilder.withMethod(HttpMethod.POST).andRequestBodyType(identifier).andFormParam("form", MODEL_IDENTIFIER.getType())
                                 .andAcceptMediaTypes("application/json").andResponse(201, ResponseBuilder.newBuilder().andHeaders("Location").build()).build()).build(),
                 "REST resources of project name:\n" +
                         "1.0\n" +
@@ -210,7 +213,7 @@ public class PlainTextBackendTest {
                         "   Header: Location\n\n\n");
 
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(TypeUtils.MODEL_IDENTIFIER, properties)))
+                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties)))
                         .andResource("res9", ResourceMethodBuilder.withMethod(HttpMethod.POST).andRequestBodyType(identifier).andQueryParam("query", Types.PRIMITIVE_INT)
                                 .andAcceptMediaTypes("application/json").andResponse(201, ResponseBuilder.newBuilder().andHeaders("Location").build()).build())
                         .andResource("res10", ResourceMethodBuilder.withMethod(HttpMethod.GET).andResponse(200, ResponseBuilder.newBuilder().build()).build()).build(),

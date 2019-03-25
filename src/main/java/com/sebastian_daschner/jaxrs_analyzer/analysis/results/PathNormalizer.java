@@ -20,11 +20,7 @@ import com.sebastian_daschner.jaxrs_analyzer.model.results.ClassResult;
 import com.sebastian_daschner.jaxrs_analyzer.model.results.MethodResult;
 import com.sebastian_daschner.jaxrs_analyzer.utils.StringUtils;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

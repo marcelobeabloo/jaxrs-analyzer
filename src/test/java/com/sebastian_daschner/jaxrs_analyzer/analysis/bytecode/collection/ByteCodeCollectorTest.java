@@ -21,7 +21,6 @@ import com.sebastian_daschner.jaxrs_analyzer.analysis.classes.ProjectMethodClass
 import com.sebastian_daschner.jaxrs_analyzer.analysis.utils.TestClassUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.instructions.Instruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.results.MethodResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,13 +31,10 @@ import org.objectweb.asm.Type;
 import javax.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
+import static com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier.of;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
@@ -82,7 +78,7 @@ public class ByteCodeCollectorTest {
 
         final ClassReader classReader = new ContextClassReader(testClass);
         final MethodResult methodResult = new MethodResult();
-        final ProjectMethodClassVisitor visitor = new ProjectMethodClassVisitor(methodResult, MethodIdentifier.of(testClass, "method", Type.getMethodDescriptor(method), false));
+        final ProjectMethodClassVisitor visitor = new ProjectMethodClassVisitor(methodResult, of(testClass, "method", Type.getMethodDescriptor(method), false));
         classReader.accept(visitor, ClassReader.EXPAND_FRAMES);
 
         final List<Instruction> actualInstructions = methodResult.getInstructions();

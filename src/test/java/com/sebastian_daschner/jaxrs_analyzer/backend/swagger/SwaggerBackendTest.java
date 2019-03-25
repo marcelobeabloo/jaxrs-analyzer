@@ -16,18 +16,12 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.backend.swagger;
 
-import com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils;
 import com.sebastian_daschner.jaxrs_analyzer.backend.Backend;
-import com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourceMethodBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourcesBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResponseBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.HttpMethod;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Project;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Resources;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -40,6 +34,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.MODEL_IDENTIFIER;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend.INLINE_PRETTIFY;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.swagger.SwaggerOptions.*;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.swagger.TypeIdentifierTestSupport.*;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 
@@ -60,7 +58,7 @@ public class SwaggerBackendTest {
     @Test
     public void test() {
         final Project project = new Project("project name", "1.0", resources);
-        cut.configure(singletonMap(StringBackend.INLINE_PRETTIFY, "false"));
+        cut.configure(singletonMap(INLINE_PRETTIFY, "false"));
         final String actualOutput = new String(cut.render(project));
 
         // TODO to fix test w/ different formattings
@@ -91,15 +89,15 @@ public class SwaggerBackendTest {
                 "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"project name\"},\"host\":\"\",\"basePath\":\"/project name/rest\",\"schemes\":[\"http\"],\"paths\":{\"/res1\":{\"get\":{\"consumes\":[],\"produces\":[],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"OK\",\"headers\":{\"Location\":{\"type\":\"string\"}},\"schema\":{\"type\":\"string\"}}}}}},\"definitions\":{}}", new HashMap<>());
 
         Map<String, String> options = new HashMap<>();
-        options.put(SwaggerOptions.SWAGGER_SCHEMES, "https,wss");
-        options.put(SwaggerOptions.DOMAIN, "example.com");
+        options.put(SWAGGER_SCHEMES, "https,wss");
+        options.put(DOMAIN, "example.com");
         add(data, ResourcesBuilder.withBase("rest")
                         .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.GET)
                                 .andResponse(200, ResponseBuilder.withResponseBody(TypeIdentifier.ofType(Types.STRING)).andHeaders("Location").build()).build()).build(),
                 "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"project name\"},\"host\":\"example.com\",\"basePath\":\"/rest\",\"schemes\":[\"https\",\"wss\"],\"paths\":{\"/res1\":{\"get\":{\"consumes\":[],\"produces\":[],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"OK\",\"headers\":{\"Location\":{\"type\":\"string\"}},\"schema\":{\"type\":\"string\"}}}}}},\"definitions\":{}}",
                 options);
 
-        TypeIdentifierTestSupport.resetTypeIdentifierCounter();
+        resetTypeIdentifierCounter();
         identifier = TypeIdentifier.ofDynamic();
         properties.put("key", stringIdentifier);
         properties.put("another", intIdentifier);
@@ -108,7 +106,7 @@ public class SwaggerBackendTest {
                                 .andResponse(200, ResponseBuilder.withResponseBody(identifier).build()).build()).build(),
                 "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"project name\"},\"host\":\"example.com\",\"basePath\":\"/rest\",\"schemes\":[\"http\"],\"paths\":{\"/res2\":{\"get\":{\"consumes\":[],\"produces\":[],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"OK\",\"headers\":{},\"schema\":{\"$ref\":\"#/definitions/JsonObject\"}}}}}},\"definitions\":{\"JsonObject\":{\"properties\":{\"another\":{\"type\":\"integer\"},\"key\":{\"type\":\"string\"}}}}}");
 
-        TypeIdentifierTestSupport.resetTypeIdentifierCounter();
+        resetTypeIdentifierCounter();
         identifier = TypeIdentifier.ofDynamic();
         properties = new HashMap<>();
         properties.put("key", stringIdentifier);
@@ -119,7 +117,7 @@ public class SwaggerBackendTest {
                                 .andResponse(200, ResponseBuilder.withResponseBody(identifier).build()).build()).build(),
                 "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"project name\"},\"host\":\"example.com\",\"basePath\":\"/rest\",\"schemes\":[\"http\"],\"paths\":{\"/res3\":{\"get\":{\"consumes\":[],\"produces\":[],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"OK\",\"headers\":{},\"schema\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/definitions/JsonObject_2\"}}}}}}},\"definitions\":{\"JsonObject_2\":{\"properties\":{\"another\":{\"type\":\"integer\"},\"key\":{\"type\":\"string\"}}}}}");
 
-        TypeIdentifierTestSupport.resetTypeIdentifierCounter();
+        resetTypeIdentifierCounter();
         identifier = TypeIdentifier.ofDynamic();
         add(data, ResourcesBuilder.withBase("rest")
                         .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(stringIdentifier)))
@@ -127,7 +125,7 @@ public class SwaggerBackendTest {
                                 .andResponse(200, ResponseBuilder.withResponseBody(identifier).build()).build()).build(),
                 "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"project name\"},\"host\":\"example.com\",\"basePath\":\"/rest\",\"schemes\":[\"http\"],\"paths\":{\"/res4\":{\"get\":{\"consumes\":[],\"produces\":[],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"OK\",\"headers\":{},\"schema\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}}}}}},\"definitions\":{}}");
 
-        TypeIdentifierTestSupport.resetTypeIdentifierCounter();
+        resetTypeIdentifierCounter();
         identifier = TypeIdentifier.ofDynamic();
         properties = new HashMap<>();
         properties.put("key", stringIdentifier);
@@ -141,9 +139,9 @@ public class SwaggerBackendTest {
         properties.put("name", stringIdentifier);
         properties.put("value", intIdentifier);
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(TypeUtils.MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(TypeUtils.MODEL_IDENTIFIER, properties))
+                        .andTypeRepresentation(MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties))
                         .andResource("res6", ResourceMethodBuilder.withMethod(HttpMethod.GET)
-                                .andResponse(200, ResponseBuilder.withResponseBody(TypeUtils.MODEL_IDENTIFIER).build()).build()).build(),
+                                .andResponse(200, ResponseBuilder.withResponseBody(MODEL_IDENTIFIER).build()).build()).build(),
                 "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"project name\"},\"host\":\"example.com\",\"basePath\":\"/rest\",\"schemes\":[\"http\"],\"paths\":{\"/res6\":{\"get\":{\"consumes\":[],\"produces\":[],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"OK\",\"headers\":{},\"schema\":{\"$ref\":\"#/definitions/Model\"}}}}}},\"definitions\":{\"Model\":{\"properties\":{\"name\":{\"type\":\"string\"},\"value\":{\"type\":\"integer\"}}}}}");
 
         identifier = TypeIdentifier.ofType("Ljavax/ws/rs/core/StreamingOutput;");
@@ -158,16 +156,16 @@ public class SwaggerBackendTest {
         properties.put("name", stringIdentifier);
         properties.put("value", intIdentifier);
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(dynamicIdentifier, TypeRepresentation.ofCollection(TypeUtils.MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(TypeUtils.MODEL_IDENTIFIER, properties)))
+                        .andTypeRepresentation(dynamicIdentifier, TypeRepresentation.ofCollection(MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties)))
                         .andResource("res8", ResourceMethodBuilder.withMethod(HttpMethod.POST).andRequestBodyType(dynamicIdentifier).andAcceptMediaTypes("application/json")
                                 .andResponse(201, ResponseBuilder.newBuilder().andHeaders("Location").build()).build()).build(),
                 "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"project name\"},\"host\":\"example.com\",\"basePath\":\"/rest\",\"schemes\":[\"http\"],\"paths\":{\"/res8\":{\"post\":{\"consumes\":[\"application/json\"],\"produces\":[],\"parameters\":[{\"name\":\"body\",\"in\":\"body\",\"required\":true,\"schema\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/definitions/Model\"}}}],\"responses\":{\"201\":{\"description\":\"Created\",\"headers\":{\"Location\":{\"type\":\"string\"}}}}}}},\"definitions\":{\"Model\":{\"properties\":{\"name\":{\"type\":\"string\"},\"value\":{\"type\":\"integer\"}}}}}");
 
         options = new HashMap<>();
-        options.put(SwaggerOptions.DOMAIN, "domain.tld");
-        options.put(SwaggerOptions.SWAGGER_SCHEMES, "http,https");
-        options.put(SwaggerOptions.RENDER_SWAGGER_TAGS, "true");
-        options.put(SwaggerOptions.SWAGGER_TAGS_PATH_OFFSET, "0");
+        options.put(DOMAIN, "domain.tld");
+        options.put(SWAGGER_SCHEMES, "http,https");
+        options.put(RENDER_SWAGGER_TAGS, "true");
+        options.put(SWAGGER_TAGS_PATH_OFFSET, "0");
         add(data, ResourcesBuilder.withBase("rest")
                         .andResource("res09", ResourceMethodBuilder.withMethod(HttpMethod.GET)
                                 .andResponse(200, ResponseBuilder.withResponseBody(TypeIdentifier.ofType(Types.STRING)).andHeaders("Location").build()).build())
@@ -180,9 +178,9 @@ public class SwaggerBackendTest {
                 options);
 
         options = new HashMap<>();
-        options.put(SwaggerOptions.RENDER_SWAGGER_TAGS, "true");
-        options.put(SwaggerOptions.DOMAIN, "example.com");
-        options.put(SwaggerOptions.SWAGGER_TAGS_PATH_OFFSET, "1");
+        options.put(RENDER_SWAGGER_TAGS, "true");
+        options.put(DOMAIN, "example.com");
+        options.put(SWAGGER_TAGS_PATH_OFFSET, "1");
         add(data, ResourcesBuilder.withBase("rest")
                         .andResource("v2/res11", ResourceMethodBuilder.withMethod(HttpMethod.GET)
                                 .andResponse(200, ResponseBuilder.withResponseBody(TypeIdentifier.ofType(Types.STRING)).andHeaders("Location").build()).build())
@@ -195,10 +193,10 @@ public class SwaggerBackendTest {
                 options);
 
         options = new HashMap<>();
-        options.put(SwaggerOptions.DOMAIN, "domain.tld");
-        options.put(SwaggerOptions.SWAGGER_SCHEMES, "http,https");
-        options.put(SwaggerOptions.RENDER_SWAGGER_TAGS, "true");
-        options.put(SwaggerOptions.SWAGGER_TAGS_PATH_OFFSET, "42");
+        options.put(DOMAIN, "domain.tld");
+        options.put(SWAGGER_SCHEMES, "http,https");
+        options.put(RENDER_SWAGGER_TAGS, "true");
+        options.put(SWAGGER_TAGS_PATH_OFFSET, "42");
         add(data, ResourcesBuilder.withBase("rest")
                         .andResource("v2/res13", ResourceMethodBuilder.withMethod(HttpMethod.GET)
                                 .andResponse(200, ResponseBuilder.withResponseBody(TypeIdentifier.ofType(Types.STRING)).andHeaders("Location").build()).build())
@@ -255,7 +253,7 @@ public class SwaggerBackendTest {
 
     public static void add(final Collection<Object[]> data, final Resources resources, final String output) {
         Map<String, String> options = new HashMap<>();
-        options.put(SwaggerOptions.DOMAIN, "example.com");
+        options.put(DOMAIN, "example.com");
         add(data, resources, output, options);
     }
 

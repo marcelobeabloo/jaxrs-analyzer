@@ -19,7 +19,6 @@ package com.sebastian_daschner.jaxrs_analyzer.analysis.classes;
 
 import com.sebastian_daschner.jaxrs_analyzer.LogProvider;
 import com.sebastian_daschner.jaxrs_analyzer.analysis.bytecode.BytecodeAnalyzer;
-import com.sebastian_daschner.jaxrs_analyzer.analysis.utils.TestClassUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.HttpResponse;
 import com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier;
@@ -39,6 +38,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.utils.TestClassUtils.getClasses;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
@@ -63,9 +63,9 @@ public class ResourceMethodContentAnalyzerTest {
     public static Collection<Object[]> data() throws NotFoundException, IOException, ReflectiveOperationException {
         Collection<Object[]> data = new LinkedList<>();
 
-        final Set<String> testClasses = TestClassUtils.getClasses("com/sebastian_daschner/jaxrs_analyzer/analysis/classes/testclasses/resource/response");
-        testClasses.addAll(TestClassUtils.getClasses("com/sebastian_daschner/jaxrs_analyzer/analysis/classes/testclasses/resource/json"));
-        testClasses.addAll(TestClassUtils.getClasses("com/sebastian_daschner/jaxrs_analyzer/analysis/classes/testclasses/resource/object"));
+        final Set<String> testClasses = getClasses("com/sebastian_daschner/jaxrs_analyzer/analysis/classes/testclasses/resource/response");
+        testClasses.addAll(getClasses("com/sebastian_daschner/jaxrs_analyzer/analysis/classes/testclasses/resource/json"));
+        testClasses.addAll(getClasses("com/sebastian_daschner/jaxrs_analyzer/analysis/classes/testclasses/resource/object"));
 
         for (final String testClass : testClasses) {
             if (!testClass.contains("/TestClass"))

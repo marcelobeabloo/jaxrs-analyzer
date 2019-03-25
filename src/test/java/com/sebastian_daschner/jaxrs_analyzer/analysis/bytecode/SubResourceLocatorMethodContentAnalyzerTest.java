@@ -3,7 +3,6 @@ package com.sebastian_daschner.jaxrs_analyzer.analysis.bytecode;
 import com.sebastian_daschner.jaxrs_analyzer.analysis.JobRegistry;
 import com.sebastian_daschner.jaxrs_analyzer.analysis.classes.ContextClassReader;
 import com.sebastian_daschner.jaxrs_analyzer.analysis.classes.ProjectMethodClassVisitor;
-import com.sebastian_daschner.jaxrs_analyzer.analysis.utils.TestClassUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.results.ClassResult;
@@ -25,6 +24,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.utils.TestClassUtils.getClasses;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -56,7 +56,7 @@ public class SubResourceLocatorMethodContentAnalyzerTest {
     public static Collection<Object[]> data() throws NotFoundException, IOException, ReflectiveOperationException {
         Collection<Object[]> data = new LinkedList<>();
 
-        final Set<String> testClasses = TestClassUtils.getClasses("com/sebastian_daschner/jaxrs_analyzer/analysis/bytecode/subresource");
+        final Set<String> testClasses = getClasses("com/sebastian_daschner/jaxrs_analyzer/analysis/bytecode/subresource");
 
         for (final String testClass : testClasses) {
             final Object[] testData = new Object[4];

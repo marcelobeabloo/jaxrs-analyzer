@@ -23,12 +23,7 @@ import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

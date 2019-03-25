@@ -27,16 +27,11 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
@@ -109,11 +104,11 @@ public final class JavaUtils {
     }
 
     private static String determineMostSpecific(final String firstType, final String secondType) {
-        if (Types.OBJECT.equals(secondType) || firstType.equals(secondType)) {
+        if (OBJECT.equals(secondType) || firstType.equals(secondType)) {
             return firstType;
         }
 
-        if (Types.OBJECT.equals(firstType))
+        if (OBJECT.equals(firstType))
             return secondType;
 
         final List<String> firstTypeParameters = getTypeParameters(firstType);
@@ -235,23 +230,23 @@ public final class JavaUtils {
     public static String toClassName(final String type) {
         switch (type.charAt(0)) {
             case 'V':
-                return Types.CLASS_PRIMITIVE_VOID;
+                return CLASS_PRIMITIVE_VOID;
             case 'Z':
-                return Types.CLASS_PRIMITIVE_BOOLEAN;
+                return CLASS_PRIMITIVE_BOOLEAN;
             case 'C':
-                return Types.CLASS_PRIMITIVE_CHAR;
+                return CLASS_PRIMITIVE_CHAR;
             case 'B':
-                return Types.CLASS_PRIMITIVE_BYTE;
+                return CLASS_PRIMITIVE_BYTE;
             case 'S':
-                return Types.CLASS_PRIMITIVE_SHORT;
+                return CLASS_PRIMITIVE_SHORT;
             case 'I':
-                return Types.CLASS_PRIMITIVE_INT;
+                return CLASS_PRIMITIVE_INT;
             case 'F':
-                return Types.CLASS_PRIMITIVE_FLOAT;
+                return CLASS_PRIMITIVE_FLOAT;
             case 'J':
-                return Types.CLASS_PRIMITIVE_LONG;
+                return CLASS_PRIMITIVE_LONG;
             case 'D':
-                return Types.CLASS_PRIMITIVE_DOUBLE;
+                return CLASS_PRIMITIVE_DOUBLE;
             case 'L':
                 final int typeParamStart = type.indexOf('<');
                 final int endIndex = typeParamStart >= 0 ? typeParamStart : type.indexOf(';');
@@ -262,7 +257,7 @@ public final class JavaUtils {
                 return toClassName(type.substring(1));
             case 'T':
                 // TODO handle type variables
-                return Types.CLASS_OBJECT;
+                return CLASS_OBJECT;
             default:
                 throw new IllegalArgumentException("Not a type signature: " + type);
         }
@@ -365,23 +360,23 @@ public final class JavaUtils {
 
     public static Class<?> loadClassFromName(final String className) {
         switch (className) {
-            case Types.CLASS_PRIMITIVE_VOID:
+            case CLASS_PRIMITIVE_VOID:
                 return int.class;
-            case Types.CLASS_PRIMITIVE_BOOLEAN:
+            case CLASS_PRIMITIVE_BOOLEAN:
                 return boolean.class;
-            case Types.CLASS_PRIMITIVE_CHAR:
+            case CLASS_PRIMITIVE_CHAR:
                 return char.class;
-            case Types.CLASS_PRIMITIVE_BYTE:
+            case CLASS_PRIMITIVE_BYTE:
                 return byte.class;
-            case Types.CLASS_PRIMITIVE_SHORT:
+            case CLASS_PRIMITIVE_SHORT:
                 return short.class;
-            case Types.CLASS_PRIMITIVE_INT:
+            case CLASS_PRIMITIVE_INT:
                 return int.class;
-            case Types.CLASS_PRIMITIVE_FLOAT:
+            case CLASS_PRIMITIVE_FLOAT:
                 return float.class;
-            case Types.CLASS_PRIMITIVE_LONG:
+            case CLASS_PRIMITIVE_LONG:
                 return long.class;
-            case Types.CLASS_PRIMITIVE_DOUBLE:
+            case CLASS_PRIMITIVE_DOUBLE:
                 return double.class;
         }
 
@@ -467,7 +462,7 @@ public final class JavaUtils {
                 if (startType && builder.charAt(i) == 'T') {
                     final int end = builder.indexOf(";", i);
                     final String identifier = builder.substring(i + 1, end);
-                    final String resolvedVariableType = typeVariables.getOrDefault(identifier, Types.OBJECT);
+                    final String resolvedVariableType = typeVariables.getOrDefault(identifier, OBJECT);
                     builder.replace(i, end + 1, resolvedVariableType);
                     i = end;
                     continue;
@@ -505,7 +500,7 @@ public final class JavaUtils {
         while (iterator.hasNext()) {
             final String arg = iterator.next();
             if (arg.charAt(0) == 'T')
-                iterator.set(Types.OBJECT);
+                iterator.set(OBJECT);
         }
 
         return args;

@@ -17,19 +17,10 @@
 package com.sebastian_daschner.jaxrs_analyzer.backend.swagger;
 
 import com.sebastian_daschner.jaxrs_analyzer.backend.Backend;
-import com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.MethodParameter;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.ParameterType;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Project;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.ResourceMethod;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Resources;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 import com.sebastian_daschner.jaxrs_analyzer.utils.StringUtils;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonWriter;
+import javax.json.*;
 import javax.json.stream.JsonGenerator;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
@@ -42,6 +33,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.mapKeyComparator;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.parameterComparator;
 import static java.util.Collections.singletonMap;
 import static java.util.Comparator.comparing;
 
@@ -208,7 +201,7 @@ public class SwaggerBackend implements Backend {
 
     private void buildParameters(final Set<MethodParameter> parameters, final ParameterType parameterType, final JsonArrayBuilder builder) {
         parameters.stream().filter(p -> p.getParameterType() == parameterType)
-                .sorted(ComparatorUtils.parameterComparator())
+                .sorted(parameterComparator())
                 .forEach(e -> {
                     final String swaggerParameterType = getSwaggerParameterType(parameterType);
                     if (swaggerParameterType != null) {
@@ -230,7 +223,7 @@ public class SwaggerBackend implements Backend {
     private JsonObjectBuilder buildResponses(final ResourceMethod method) {
         final JsonObjectBuilder responses = Json.createObjectBuilder();
 
-        method.getResponses().entrySet().stream().sorted(ComparatorUtils.mapKeyComparator()).forEach(e -> {
+        method.getResponses().entrySet().stream().sorted(mapKeyComparator()).forEach(e -> {
             final JsonObjectBuilder headers = Json.createObjectBuilder();
             e.getValue().getHeaders().stream().sorted().forEach(h -> headers.add(h, Json.createObjectBuilder().add("type", "string")));
 

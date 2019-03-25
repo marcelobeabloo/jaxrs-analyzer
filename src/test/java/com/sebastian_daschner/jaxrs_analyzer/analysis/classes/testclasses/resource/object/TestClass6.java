@@ -2,11 +2,7 @@ package com.sebastian_daschner.jaxrs_analyzer.analysis.classes.testclasses.resou
 
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.HttpResponse;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TestClass6 {
 

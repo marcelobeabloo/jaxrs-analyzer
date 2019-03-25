@@ -16,12 +16,12 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.model.elements;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.OBJECT;
 
 /**
  * Represents an element on the runtime stack.
@@ -34,7 +34,7 @@ public class Element {
     private final Set<String> types;
 
     public Element() {
-        this(Collections.singleton(Types.OBJECT));
+        this(Collections.singleton(OBJECT));
     }
 
     public Element(final String type, final Object... values) {

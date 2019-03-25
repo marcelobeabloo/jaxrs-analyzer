@@ -42,6 +42,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.isAnnotationPresent;
+
 /**
  * Analyzes the JAX-RS project. This class is thread-safe.
  *
@@ -112,7 +114,7 @@ public class ProjectAnalyzer {
 
     private boolean isJAXRSRootResource(String className) {
         final Class<?> clazz = JavaUtils.loadClassFromName(className);
-        return clazz != null && (JavaUtils.isAnnotationPresent(clazz, javax.ws.rs.Path.class) || JavaUtils.isAnnotationPresent(clazz, ApplicationPath.class));
+        return clazz != null && (isAnnotationPresent(clazz, javax.ws.rs.Path.class) || isAnnotationPresent(clazz, ApplicationPath.class));
     }
 
     private void analyzeClass(final String className, ClassResult classResult) {

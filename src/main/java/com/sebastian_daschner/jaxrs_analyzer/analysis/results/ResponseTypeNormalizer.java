@@ -16,10 +16,12 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 
 import javax.ws.rs.core.GenericEntity;
+
+import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.getTypeParameters;
+import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.isAssignableTo;
 
 /**
  * Normalizes the request/response body Java types.
@@ -39,9 +41,9 @@ final class ResponseTypeNormalizer {
      * @return The normalized type
      */
     static String normalizeCollection(final String type) {
-        if (JavaUtils.isAssignableTo(type, Types.COLLECTION)) {
-            if (!JavaUtils.getTypeParameters(type).isEmpty()) {
-                return JavaUtils.getTypeParameters(type).get(0);
+        if (isAssignableTo(type, Types.COLLECTION)) {
+            if (!getTypeParameters(type).isEmpty()) {
+                return getTypeParameters(type).get(0);
             }
             return Types.OBJECT;
         }
@@ -55,8 +57,8 @@ final class ResponseTypeNormalizer {
      * @return The normalized type
      */
     static String normalizeResponseWrapper(final String type) {
-        if (!JavaUtils.getTypeParameters(type).isEmpty() && JavaUtils.isAssignableTo(type, Types.GENERIC_ENTITY))
-            return JavaUtils.getTypeParameters(type).get(0);
+        if (!getTypeParameters(type).isEmpty() && isAssignableTo(type, Types.GENERIC_ENTITY))
+            return getTypeParameters(type).get(0);
         return type;
     }
 

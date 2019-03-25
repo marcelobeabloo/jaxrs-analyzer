@@ -3,7 +3,6 @@ package com.sebastian_daschner.jaxrs_analyzer.analysis.results;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,6 +14,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.STRING_IDENTIFIER;
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.STRING_LIST_IDENTIFIER;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -32,7 +33,7 @@ public class DynamicTypeAnalyzerTest {
     @Test
     public void testPrimitives() {
         TypeIdentifier identifier = cut.analyze(JsonValue.FALSE);
-        assertThat(identifier.getType(), Is.is(Types.PRIMITIVE_BOOLEAN));
+        assertThat(identifier.getType(), is(Types.PRIMITIVE_BOOLEAN));
 
         identifier = cut.analyze(JsonValue.TRUE);
         assertThat(identifier.getType(), is(Types.PRIMITIVE_BOOLEAN));
@@ -116,7 +117,7 @@ public class DynamicTypeAnalyzerTest {
     @Test
     public void testEqualTypes() {
         // should be ignored
-        typeRepresentations.put(TypeUtils.STRING_LIST_IDENTIFIER, TypeRepresentation.ofCollection(TypeUtils.STRING_LIST_IDENTIFIER, TypeRepresentation.ofConcrete(TypeUtils.STRING_IDENTIFIER)));
+        typeRepresentations.put(STRING_LIST_IDENTIFIER, TypeRepresentation.ofCollection(STRING_LIST_IDENTIFIER, TypeRepresentation.ofConcrete(STRING_IDENTIFIER)));
         final TypeIdentifier modelIdentifier = TypeIdentifier.ofType("com.sebastian_daschner.test.Model");
         final Map<String, TypeIdentifier> modelProperties = Collections.singletonMap("string", TypeUtils.STRING_IDENTIFIER);
         typeRepresentations.put(modelIdentifier, TypeRepresentation.ofConcrete(modelIdentifier, modelProperties));

@@ -19,13 +19,14 @@ package com.sebastian_daschner.jaxrs_test;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
-import javax.validation.constraints.Pattern;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.validation.constraints.Pattern;
 
 /**
  * These sources are solely used for test purposes and not meant for deployment.

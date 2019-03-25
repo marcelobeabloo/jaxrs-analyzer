@@ -16,7 +16,6 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.analysis.bytecode.simulation;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.Element;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.JsonArray;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.JsonObject;
@@ -26,6 +25,8 @@ import com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
+
 /**
  * Known JSON methods which apply logic to the result or to the return element.
  *
@@ -33,105 +34,105 @@ import java.util.function.BiFunction;
  */
 enum KnownJsonResultMethod implements IdentifiableMethod {
 
-    JSON_ARRAY_BUILDER_CREATE(MethodIdentifier.ofStatic(Types.CLASS_JSON, "createArrayBuilder", Types.JSON_ARRAY_BUILDER), (object, arguments) -> new Element(Types.JSON_ARRAY, new JsonArray())),
+    JSON_ARRAY_BUILDER_CREATE(MethodIdentifier.ofStatic(CLASS_JSON, "createArrayBuilder", JSON_ARRAY_BUILDER), (object, arguments) -> new Element(JSON_ARRAY, new JsonArray())),
 
-    JSON_ARRAY_BUILDER_ADD_BIG_DECIMAL(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "add", Types.JSON_ARRAY_BUILDER, Types.BIG_DECIMAL),
-            (object, arguments) -> addToArray(object, arguments, Types.BIG_DECIMAL)),
+    JSON_ARRAY_BUILDER_ADD_BIG_DECIMAL(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "add", JSON_ARRAY_BUILDER, BIG_DECIMAL),
+            (object, arguments) -> addToArray(object, arguments, BIG_DECIMAL)),
 
-    JSON_ARRAY_BUILDER_ADD_BIG_INTEGER(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "add", Types.JSON_ARRAY_BUILDER, Types.BIG_INTEGER),
-            (object, arguments) -> addToArray(object, arguments, Types.BIG_INTEGER)),
+    JSON_ARRAY_BUILDER_ADD_BIG_INTEGER(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "add", JSON_ARRAY_BUILDER, BIG_INTEGER),
+            (object, arguments) -> addToArray(object, arguments, BIG_INTEGER)),
 
-    JSON_ARRAY_BUILDER_ADD_STRING(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "add", Types.JSON_ARRAY_BUILDER, Types.STRING),
-            (object, arguments) -> addToArray(object, arguments, Types.STRING)),
+    JSON_ARRAY_BUILDER_ADD_STRING(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "add", JSON_ARRAY_BUILDER, STRING),
+            (object, arguments) -> addToArray(object, arguments, STRING)),
 
-    JSON_ARRAY_BUILDER_ADD_INT(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "add", Types.JSON_ARRAY_BUILDER, Types.PRIMITIVE_INT),
-            (object, arguments) -> addToArray(object, arguments, Types.INTEGER)),
+    JSON_ARRAY_BUILDER_ADD_INT(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "add", JSON_ARRAY_BUILDER, PRIMITIVE_INT),
+            (object, arguments) -> addToArray(object, arguments, INTEGER)),
 
-    JSON_ARRAY_BUILDER_ADD_LONG(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "add", Types.JSON_ARRAY_BUILDER, Types.PRIMITIVE_LONG),
-            (object, arguments) -> addToArray(object, arguments, Types.LONG)),
+    JSON_ARRAY_BUILDER_ADD_LONG(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "add", JSON_ARRAY_BUILDER, PRIMITIVE_LONG),
+            (object, arguments) -> addToArray(object, arguments, LONG)),
 
-    JSON_ARRAY_BUILDER_ADD_DOUBLE(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "add", Types.JSON_ARRAY_BUILDER, Types.PRIMITIVE_DOUBLE),
-            (object, arguments) -> addToArray(object, arguments, Types.DOUBLE)),
+    JSON_ARRAY_BUILDER_ADD_DOUBLE(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "add", JSON_ARRAY_BUILDER, PRIMITIVE_DOUBLE),
+            (object, arguments) -> addToArray(object, arguments, DOUBLE)),
 
-    JSON_ARRAY_BUILDER_ADD_BOOLEAN(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "add", Types.JSON_ARRAY_BUILDER, Types.PRIMITIVE_BOOLEAN),
-            (object, arguments) -> addToArray(object, arguments, Types.PRIMITIVE_BOOLEAN)),
+    JSON_ARRAY_BUILDER_ADD_BOOLEAN(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "add", JSON_ARRAY_BUILDER, PRIMITIVE_BOOLEAN),
+            (object, arguments) -> addToArray(object, arguments, PRIMITIVE_BOOLEAN)),
 
-    JSON_ARRAY_BUILDER_ADD_JSON(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "add", Types.JSON_ARRAY_BUILDER, Types.JSON_VALUE),
+    JSON_ARRAY_BUILDER_ADD_JSON(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "add", JSON_ARRAY_BUILDER, JSON_VALUE),
             KnownJsonResultMethod::addToArray),
 
-    JSON_ARRAY_BUILDER_ADD_JSON_OBJECT(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "add", Types.JSON_ARRAY_BUILDER, Types.JSON_OBJECT_BUILDER), (object, arguments) ->
-            addToArray(object, arguments, Types.JSON_OBJECT)),
+    JSON_ARRAY_BUILDER_ADD_JSON_OBJECT(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "add", JSON_ARRAY_BUILDER, JSON_OBJECT_BUILDER), (object, arguments) ->
+            addToArray(object, arguments, JSON_OBJECT)),
 
-    JSON_ARRAY_BUILDER_ADD_JSON_ARRAY(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "add", Types.JSON_ARRAY_BUILDER, Types.JSON_ARRAY_BUILDER), (object, arguments) ->
-            addToArray(object, arguments, Types.JSON_ARRAY)),
+    JSON_ARRAY_BUILDER_ADD_JSON_ARRAY(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "add", JSON_ARRAY_BUILDER, JSON_ARRAY_BUILDER), (object, arguments) ->
+            addToArray(object, arguments, JSON_ARRAY)),
 
-    JSON_ARRAY_BUILDER_ADD_NULL(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "addNull", Types.JSON_ARRAY_BUILDER),
+    JSON_ARRAY_BUILDER_ADD_NULL(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "addNull", JSON_ARRAY_BUILDER),
             (object, arguments) -> {
                 object.getPossibleValues().stream().filter(o -> o instanceof JsonArray).map(o -> (JsonArray) o)
-                        .forEach(a -> a.getElements().add(new Element(Types.OBJECT, null)));
+                        .forEach(a -> a.getElements().add(new Element(OBJECT, null)));
                 return object;
             }),
 
-    JSON_ARRAY_BUILDER_BUILD(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_ARRAY_BUILDER, "build", Types.JSON_ARRAY), (object, arguments) -> {
-        Element json = new Element(Types.JSON_ARRAY);
+    JSON_ARRAY_BUILDER_BUILD(MethodIdentifier.ofNonStatic(CLASS_JSON_ARRAY_BUILDER, "build", JSON_ARRAY), (object, arguments) -> {
+        Element json = new Element(JSON_ARRAY);
         json.getPossibleValues().addAll(object.getPossibleValues());
         return json;
     }),
 
-    JSON_OBJECT_BUILDER_CREATE(MethodIdentifier.ofStatic(Types.CLASS_JSON, "createObjectBuilder", Types.JSON_OBJECT_BUILDER), (object, arguments) -> new Element(Types.JSON_OBJECT, new JsonObject())),
+    JSON_OBJECT_BUILDER_CREATE(MethodIdentifier.ofStatic(CLASS_JSON, "createObjectBuilder", JSON_OBJECT_BUILDER), (object, arguments) -> new Element(JSON_OBJECT, new JsonObject())),
 
-    JSON_OBJECT_BUILDER_ADD_BIG_DECIMAL(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "add", Types.JSON_OBJECT_BUILDER, Types.STRING, Types.BIG_DECIMAL),
-            (object, arguments) -> mergeJsonStructure(object, arguments, Types.BIG_DECIMAL)),
+    JSON_OBJECT_BUILDER_ADD_BIG_DECIMAL(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "add", JSON_OBJECT_BUILDER, STRING, BIG_DECIMAL),
+            (object, arguments) -> mergeJsonStructure(object, arguments, BIG_DECIMAL)),
 
-    JSON_OBJECT_BUILDER_ADD_BIG_INTEGER(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "add", Types.JSON_OBJECT_BUILDER, Types.STRING, Types.BIG_INTEGER),
-            (object, arguments) -> mergeJsonStructure(object, arguments, Types.BIG_INTEGER)),
+    JSON_OBJECT_BUILDER_ADD_BIG_INTEGER(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "add", JSON_OBJECT_BUILDER, STRING, BIG_INTEGER),
+            (object, arguments) -> mergeJsonStructure(object, arguments, BIG_INTEGER)),
 
-    JSON_OBJECT_BUILDER_ADD_STRING(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "add", Types.JSON_OBJECT_BUILDER, Types.STRING, Types.STRING),
-            (object, arguments) -> mergeJsonStructure(object, arguments, Types.STRING)),
+    JSON_OBJECT_BUILDER_ADD_STRING(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "add", JSON_OBJECT_BUILDER, STRING, STRING),
+            (object, arguments) -> mergeJsonStructure(object, arguments, STRING)),
 
-    JSON_OBJECT_BUILDER_ADD_INT(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "add", Types.JSON_OBJECT_BUILDER, Types.STRING, Types.PRIMITIVE_INT),
-            (object, arguments) -> mergeJsonStructure(object, arguments, Types.INTEGER)),
+    JSON_OBJECT_BUILDER_ADD_INT(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "add", JSON_OBJECT_BUILDER, STRING, PRIMITIVE_INT),
+            (object, arguments) -> mergeJsonStructure(object, arguments, INTEGER)),
 
-    JSON_OBJECT_BUILDER_ADD_LONG(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "add", Types.JSON_OBJECT_BUILDER, Types.STRING, Types.PRIMITIVE_LONG),
-            (object, arguments) -> mergeJsonStructure(object, arguments, Types.LONG)),
+    JSON_OBJECT_BUILDER_ADD_LONG(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "add", JSON_OBJECT_BUILDER, STRING, PRIMITIVE_LONG),
+            (object, arguments) -> mergeJsonStructure(object, arguments, LONG)),
 
-    JSON_OBJECT_BUILDER_ADD_DOUBLE(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "add", Types.JSON_OBJECT_BUILDER, Types.STRING, Types.PRIMITIVE_DOUBLE),
-            (object, arguments) -> mergeJsonStructure(object, arguments, Types.DOUBLE)),
+    JSON_OBJECT_BUILDER_ADD_DOUBLE(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "add", JSON_OBJECT_BUILDER, STRING, PRIMITIVE_DOUBLE),
+            (object, arguments) -> mergeJsonStructure(object, arguments, DOUBLE)),
 
-    JSON_OBJECT_BUILDER_ADD_BOOLEAN(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "add", Types.JSON_OBJECT_BUILDER, Types.STRING, Types.PRIMITIVE_BOOLEAN),
-            (object, arguments) -> mergeJsonStructure(object, arguments, Types.PRIMITIVE_BOOLEAN)),
+    JSON_OBJECT_BUILDER_ADD_BOOLEAN(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "add", JSON_OBJECT_BUILDER, STRING, PRIMITIVE_BOOLEAN),
+            (object, arguments) -> mergeJsonStructure(object, arguments, PRIMITIVE_BOOLEAN)),
 
-    JSON_OBJECT_BUILDER_ADD_JSON(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "add", Types.JSON_OBJECT_BUILDER, Types.STRING, Types.JSON_VALUE),
+    JSON_OBJECT_BUILDER_ADD_JSON(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "add", JSON_OBJECT_BUILDER, STRING, JSON_VALUE),
             KnownJsonResultMethod::mergeJsonStructure),
 
-    JSON_OBJECT_BUILDER_ADD_JSON_OBJECT(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "add", Types.JSON_OBJECT_BUILDER, Types.STRING, Types.JSON_OBJECT_BUILDER), (object, arguments) ->
-            mergeJsonStructure(object, arguments, Types.JSON_OBJECT)),
+    JSON_OBJECT_BUILDER_ADD_JSON_OBJECT(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "add", JSON_OBJECT_BUILDER, STRING, JSON_OBJECT_BUILDER), (object, arguments) ->
+            mergeJsonStructure(object, arguments, JSON_OBJECT)),
 
-    JSON_OBJECT_BUILDER_ADD_JSON_ARRAY(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "add", Types.JSON_OBJECT_BUILDER, Types.STRING, Types.JSON_ARRAY_BUILDER), (object, arguments) ->
-            mergeJsonStructure(object, arguments, Types.JSON_ARRAY)),
+    JSON_OBJECT_BUILDER_ADD_JSON_ARRAY(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "add", JSON_OBJECT_BUILDER, STRING, JSON_ARRAY_BUILDER), (object, arguments) ->
+            mergeJsonStructure(object, arguments, JSON_ARRAY)),
 
-    JSON_OBJECT_BUILDER_ADD_NULL(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "addNull", Types.JSON_OBJECT_BUILDER, Types.STRING),
+    JSON_OBJECT_BUILDER_ADD_NULL(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "addNull", JSON_OBJECT_BUILDER, STRING),
             (object, arguments) -> {
                 object.getPossibleValues().stream()
                         .filter(o -> o instanceof JsonObject).map(o -> (JsonObject) o)
                         .forEach(o -> arguments.get(0).getPossibleValues().stream().map(s -> (String) s)
-                                .forEach(s -> o.getStructure().merge(s, new Element(Types.OBJECT, null), Element::merge)));
+                                .forEach(s -> o.getStructure().merge(s, new Element(OBJECT, null), Element::merge)));
                 return object;
             }),
 
-    JSON_OBJECT_BUILDER_BUILD(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT_BUILDER, "build", Types.JSON_OBJECT), (object, arguments) -> {
-        final Element json = new Element(Types.JSON_OBJECT);
+    JSON_OBJECT_BUILDER_BUILD(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT_BUILDER, "build", JSON_OBJECT), (object, arguments) -> {
+        final Element json = new Element(JSON_OBJECT);
         json.getPossibleValues().addAll(object.getPossibleValues());
         return json;
     }),
 
-    JSON_OBJECT_GET_BOOLEAN(MethodIdentifier.ofNonStatic(Types.CLASS_JSON_OBJECT, "getBoolean", Types.PRIMITIVE_BOOLEAN, Types.STRING),
+    JSON_OBJECT_GET_BOOLEAN(MethodIdentifier.ofNonStatic(CLASS_JSON_OBJECT, "getBoolean", PRIMITIVE_BOOLEAN, STRING),
             (object, arguments) -> object.getPossibleValues().stream()
                     .filter(o -> o instanceof JsonObject).map(o -> (JsonObject) o)
                     .map(o -> arguments.get(0).getPossibleValues().stream()
                             .map(s -> (String) s).map(s -> o.getStructure().get(s))
-                            .reduce(new Element(Types.PRIMITIVE_BOOLEAN), Element::merge))
-                    .reduce(new Element(Types.PRIMITIVE_BOOLEAN), Element::merge));
+                            .reduce(new Element(PRIMITIVE_BOOLEAN), Element::merge))
+                    .reduce(new Element(PRIMITIVE_BOOLEAN), Element::merge));
 
     private final MethodIdentifier identifier;
 

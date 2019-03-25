@@ -1,17 +1,11 @@
 package com.sebastian_daschner.jaxrs_analyzer.backend.asciidoc;
 
-import com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils;
 import com.sebastian_daschner.jaxrs_analyzer.backend.Backend;
-import com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourceMethodBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourcesBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResponseBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.HttpMethod;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Project;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Resources;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -21,6 +15,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.ENUM_IDENTIFIER;
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.MODEL_IDENTIFIER;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend.INLINE_PRETTIFY;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 
@@ -42,7 +39,7 @@ public class AsciiDocBackendTest {
     @Test
     public void test() {
         final Project project = new Project("project name", "1.0", resources);
-        cut.configure(singletonMap(StringBackend.INLINE_PRETTIFY, String.valueOf(inlinePrettify)));
+        cut.configure(singletonMap(INLINE_PRETTIFY, String.valueOf(inlinePrettify)));
         final String actualOutput = new String(cut.render(project));
 
         assertEquals(expectedOutput, actualOutput);
@@ -211,9 +208,9 @@ public class AsciiDocBackendTest {
         properties.put("name", stringIdentifier);
         properties.put("value", intIdentifier);
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(TypeUtils.MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(TypeUtils.MODEL_IDENTIFIER, properties))
+                        .andTypeRepresentation(MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties))
                         .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.GET)
-                                .andResponse(200, ResponseBuilder.withResponseBody(TypeUtils.MODEL_IDENTIFIER).build()).build()).build(),
+                                .andResponse(200, ResponseBuilder.withResponseBody(MODEL_IDENTIFIER).build()).build()).build(),
                 "= REST resources of project name\n" +
                         "1.0\n" +
                         "\n" +
@@ -234,7 +231,7 @@ public class AsciiDocBackendTest {
         properties.put("name", stringIdentifier);
         properties.put("value", intIdentifier);
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(TypeUtils.MODEL_IDENTIFIER, properties)))
+                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties)))
                         .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.GET)
                                 .andResponse(200, ResponseBuilder.withResponseBody(identifier).build()).build()).build(),
                 "= REST resources of project name\n" +
@@ -254,7 +251,7 @@ public class AsciiDocBackendTest {
 
         identifier = TypeIdentifier.ofType("Ljava/util/List<Lcom/sebastian_daschner/test/Enumeration;>;");
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofEnum(TypeUtils.ENUM_IDENTIFIER, "VALUE", "ANOTHER_VALUE", "OTHER")))
+                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofEnum(ENUM_IDENTIFIER, "VALUE", "ANOTHER_VALUE", "OTHER")))
                         .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.GET)
                                 .andResponse(200, ResponseBuilder.withResponseBody(identifier).build()).build()).build(),
                 "= REST resources of project name\n" +
@@ -277,8 +274,8 @@ public class AsciiDocBackendTest {
         properties.put("name", stringIdentifier);
         properties.put("value", intIdentifier);
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(TypeUtils.MODEL_IDENTIFIER, properties)))
-                        .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.POST).andRequestBodyType(identifier).andFormParam("form", TypeUtils.MODEL_IDENTIFIER.getType())
+                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties)))
+                        .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.POST).andRequestBodyType(identifier).andFormParam("form", MODEL_IDENTIFIER.getType())
                                 .andAcceptMediaTypes("application/json").andResponse(201, ResponseBuilder.newBuilder().andHeaders("Location").build()).build()).build(),
                 "= REST resources of project name\n" +
                         "1.0\n" +
@@ -298,7 +295,7 @@ public class AsciiDocBackendTest {
                         "*Header*: `Location` + \n\n", false);
 
         add(data, ResourcesBuilder.withBase("rest")
-                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(TypeUtils.MODEL_IDENTIFIER, properties)))
+                        .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties)))
                         .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.POST).andRequestBodyType(identifier).andQueryParam("query", Types.PRIMITIVE_INT)
                                 .andAcceptMediaTypes("application/json").andResponse(201, ResponseBuilder.newBuilder().andHeaders("Location").build()).build())
                         .andResource("res2", ResourceMethodBuilder.withMethod(HttpMethod.GET).andResponse(200, ResponseBuilder.newBuilder().build()).build()).build(),

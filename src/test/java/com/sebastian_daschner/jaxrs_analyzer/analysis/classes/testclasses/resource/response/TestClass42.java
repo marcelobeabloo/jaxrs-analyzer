@@ -16,7 +16,6 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.analysis.classes.testclasses.resource.response;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.Element;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.HttpResponse;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.JsonArray;
@@ -28,6 +27,8 @@ import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
 
 public class TestClass42 {
 
@@ -51,12 +52,12 @@ public class TestClass42 {
         final HttpResponse result = new HttpResponse();
 
         result.getStatuses().add(200);
-        result.getEntityTypes().add(Types.JSON_ARRAY);
+        result.getEntityTypes().add(JSON_ARRAY);
 
         final JsonArray jsonArray = new JsonArray();
         final JsonObject jsonObject = new JsonObject();
-        jsonObject.getStructure().put("key", new Element(Types.STRING));
-        jsonArray.getElements().add(new Element(Types.JSON_OBJECT, jsonObject));
+        jsonObject.getStructure().put("key", new Element(STRING));
+        jsonArray.getElements().add(new Element(JSON_OBJECT, jsonObject));
 
         result.getInlineEntities().add(jsonArray);
 

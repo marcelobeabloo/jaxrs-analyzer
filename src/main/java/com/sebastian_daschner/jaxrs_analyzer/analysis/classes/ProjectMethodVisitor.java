@@ -1,28 +1,19 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.classes;
 
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.DefaultInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.ExceptionHandlerInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.Instruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.LoadInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.LoadStoreInstructionPlaceholder;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.PushInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.SizeChangingInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.StoreInstruction;
+import com.sebastian_daschner.jaxrs_analyzer.model.instructions.*;
 import com.sebastian_daschner.jaxrs_analyzer.model.results.MethodResult;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static com.sebastian_daschner.jaxrs_analyzer.analysis.bytecode.collection.InstructionBuilder.*;
+import static com.sebastian_daschner.jaxrs_analyzer.model.instructions.Instruction.InstructionType.LOAD_PLACEHOLDER;
+import static com.sebastian_daschner.jaxrs_analyzer.model.instructions.Instruction.InstructionType.STORE_PLACEHOLDER;
 import static org.objectweb.asm.Opcodes.*;
 import static org.objectweb.asm.util.Printer.OPCODES;
 
@@ -66,7 +57,7 @@ class ProjectMethodVisitor extends MethodVisitor {
         ListIterator<Instruction> iterator = methodResult.getInstructions().listIterator();
         while (iterator.hasNext()) {
             final Instruction instruction = iterator.next();
-            if (instruction.getType() != Instruction.InstructionType.LOAD_PLACEHOLDER && instruction.getType() != Instruction.InstructionType.STORE_PLACEHOLDER)
+            if (instruction.getType() != LOAD_PLACEHOLDER && instruction.getType() != STORE_PLACEHOLDER)
                 continue;
 
             final LoadStoreInstructionPlaceholder placeholder = (LoadStoreInstructionPlaceholder) instruction;
@@ -76,7 +67,7 @@ class ProjectMethodVisitor extends MethodVisitor {
             final Label label = placeholder.getLabel();
             if (isLabelActive(label, start, end)) {
                 final String type = signature != null ? signature : desc;
-                iterator.set(placeholder.getType() == Instruction.InstructionType.LOAD_PLACEHOLDER ? new LoadInstruction(index, type, name, label, end) : new StoreInstruction(index, type, name, label));
+                iterator.set(placeholder.getType() == LOAD_PLACEHOLDER ? new LoadInstruction(index, type, name, label, end) : new StoreInstruction(index, type, name, label));
             }
         }
     }
@@ -198,9 +189,9 @@ class ProjectMethodVisitor extends MethodVisitor {
         final ListIterator<Instruction> listIterator = methodResult.getInstructions().listIterator();
         while (listIterator.hasNext()) {
             final Instruction instruction = listIterator.next();
-            if (instruction.getType() == Instruction.InstructionType.LOAD_PLACEHOLDER) {
+            if (instruction.getType() == LOAD_PLACEHOLDER) {
                 listIterator.set(new LoadInstruction(((LoadStoreInstructionPlaceholder) instruction).getNumber(), Types.OBJECT, instruction.getLabel(), null));
-            } else if (instruction.getType() == Instruction.InstructionType.STORE_PLACEHOLDER) {
+            } else if (instruction.getType() == STORE_PLACEHOLDER) {
                 listIterator.set(new StoreInstruction(((LoadStoreInstructionPlaceholder) instruction).getNumber(), Types.OBJECT, instruction.getLabel()));
             }
         }

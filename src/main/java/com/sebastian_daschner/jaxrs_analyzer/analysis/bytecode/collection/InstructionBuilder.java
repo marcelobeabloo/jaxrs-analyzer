@@ -1,20 +1,8 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.bytecode.collection;
 
 import com.sebastian_daschner.jaxrs_analyzer.LogProvider;
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.DefaultInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.DupInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.GetFieldInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.GetStaticInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.Instruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.InvokeDynamicInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.InvokeInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.LoadStoreInstructionPlaceholder;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.NewInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.PushInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.ReturnInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.SizeChangingInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.ThrowInstruction;
+import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
+import com.sebastian_daschner.jaxrs_analyzer.model.instructions.*;
 import com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
@@ -22,6 +10,8 @@ import org.objectweb.asm.Opcodes;
 
 import java.lang.reflect.Field;
 
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
+import static com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier.of;
 import static org.objectweb.asm.Opcodes.*;
 import static org.objectweb.asm.util.Printer.OPCODES;
 
@@ -61,33 +51,33 @@ public final class InstructionBuilder {
 
         switch (opcode) {
             case ICONST_0:
-                return new PushInstruction(0, Types.PRIMITIVE_INT, label);
+                return new PushInstruction(0, PRIMITIVE_INT, label);
             case ICONST_1:
-                return new PushInstruction(1, Types.PRIMITIVE_INT, label);
+                return new PushInstruction(1, PRIMITIVE_INT, label);
             case ICONST_2:
-                return new PushInstruction(2, Types.PRIMITIVE_INT, label);
+                return new PushInstruction(2, PRIMITIVE_INT, label);
             case ICONST_3:
-                return new PushInstruction(3, Types.PRIMITIVE_INT, label);
+                return new PushInstruction(3, PRIMITIVE_INT, label);
             case ICONST_4:
-                return new PushInstruction(4, Types.PRIMITIVE_INT, label);
+                return new PushInstruction(4, PRIMITIVE_INT, label);
             case ICONST_5:
-                return new PushInstruction(5, Types.PRIMITIVE_INT, label);
+                return new PushInstruction(5, PRIMITIVE_INT, label);
             case ICONST_M1:
-                return new PushInstruction(-1, Types.PRIMITIVE_INT, label);
+                return new PushInstruction(-1, PRIMITIVE_INT, label);
             case DCONST_0:
-                return new PushInstruction(0d, Types.PRIMITIVE_DOUBLE, label);
+                return new PushInstruction(0d, PRIMITIVE_DOUBLE, label);
             case DCONST_1:
-                return new PushInstruction(1d, Types.PRIMITIVE_DOUBLE, label);
+                return new PushInstruction(1d, PRIMITIVE_DOUBLE, label);
             case FCONST_0:
-                return new PushInstruction(1f, Types.PRIMITIVE_FLOAT, label);
+                return new PushInstruction(1f, PRIMITIVE_FLOAT, label);
             case FCONST_1:
-                return new PushInstruction(1f, Types.PRIMITIVE_FLOAT, label);
+                return new PushInstruction(1f, PRIMITIVE_FLOAT, label);
             case FCONST_2:
-                return new PushInstruction(2f, Types.PRIMITIVE_FLOAT, label);
+                return new PushInstruction(2f, PRIMITIVE_FLOAT, label);
             case LCONST_0:
-                return new PushInstruction(0L, Types.PRIMITIVE_LONG, label);
+                return new PushInstruction(0L, PRIMITIVE_LONG, label);
             case LCONST_1:
-                return new PushInstruction(1L, Types.PRIMITIVE_LONG, label);
+                return new PushInstruction(1L, PRIMITIVE_LONG, label);
             case IALOAD:
             case LALOAD:
             case FALOAD:
@@ -240,18 +230,18 @@ public final class InstructionBuilder {
             case INVOKEINTERFACE:
             case INVOKEVIRTUAL:
             case INVOKESPECIAL:
-                return new InvokeInstruction(MethodIdentifier.of(containingClass, name, desc, false), label);
+                return new InvokeInstruction(of(containingClass, name, desc, false), label);
             case INVOKESTATIC:
-                return new InvokeInstruction(MethodIdentifier.of(containingClass, name, desc, true), label);
+                return new InvokeInstruction(of(containingClass, name, desc, true), label);
             default:
                 throw new IllegalArgumentException("Unexpected opcode " + opcode);
         }
     }
 
     public static Instruction buildInvokeDynamic(final String className, final String name, final String desc, final Handle handle, final Label label) {
-        final MethodIdentifier actualIdentifier = MethodIdentifier.of(handle.getOwner(), handle.getName(), handle.getDesc(), handle.getTag() == Opcodes.H_INVOKESTATIC);
+        final MethodIdentifier actualIdentifier = of(handle.getOwner(), handle.getName(), handle.getDesc(), handle.getTag() == Opcodes.H_INVOKESTATIC);
 
-        final MethodIdentifier dynamicIdentifier = MethodIdentifier.of(className, name, desc, true);
+        final MethodIdentifier dynamicIdentifier = of(className, name, desc, true);
         return new InvokeDynamicInstruction(actualIdentifier, dynamicIdentifier, label);
     }
 
@@ -290,7 +280,7 @@ public final class InstructionBuilder {
         switch (opcode) {
             case BIPUSH:
             case SIPUSH:
-                return new PushInstruction(operand, Types.PRIMITIVE_INT, label);
+                return new PushInstruction(operand, PRIMITIVE_INT, label);
             case NEWARRAY:
                 return new SizeChangingInstruction(OPCODES[NEWARRAY], 1, 1, label);
             default:

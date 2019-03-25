@@ -16,7 +16,6 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.analysis.classes.testclasses.resource.response;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.Element;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.HttpResponse;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.JsonArray;
@@ -27,6 +26,8 @@ import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
 
 public class TestClass37 {
 
@@ -42,18 +43,18 @@ public class TestClass37 {
         final HttpResponse secondResult = new HttpResponse();
 
         firstResult.getStatuses().add(202);
-        firstResult.getEntityTypes().add(Types.JSON_ARRAY);
+        firstResult.getEntityTypes().add(JSON_ARRAY);
 
         secondResult.getStatuses().add(200);
-        secondResult.getEntityTypes().add(Types.JSON_OBJECT);
+        secondResult.getEntityTypes().add(JSON_OBJECT);
 
         final JsonObject jsonObject = new JsonObject();
-        jsonObject.getStructure().put("key", new Element(Types.STRING, "value"));
-        jsonObject.getStructure().put("duke", new Element(Types.INTEGER, 42));
+        jsonObject.getStructure().put("key", new Element(STRING, "value"));
+        jsonObject.getStructure().put("duke", new Element(INTEGER, 42));
 
         final JsonArray jsonArray = new JsonArray();
-        jsonArray.getElements().add(new Element(Types.PRIMITIVE_BOOLEAN, 1));
-        jsonArray.getElements().add(new Element(Types.STRING, "hello"));
+        jsonArray.getElements().add(new Element(PRIMITIVE_BOOLEAN, 1));
+        jsonArray.getElements().add(new Element(STRING, "hello"));
 
         firstResult.getInlineEntities().add(jsonArray);
         secondResult.getInlineEntities().add(jsonObject);

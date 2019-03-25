@@ -18,11 +18,7 @@ package com.sebastian_daschner.jaxrs_analyzer.model.rest;
 
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a request/response body type including the properties which actually will be serialized (e.g. depending on the JAXB mapping).

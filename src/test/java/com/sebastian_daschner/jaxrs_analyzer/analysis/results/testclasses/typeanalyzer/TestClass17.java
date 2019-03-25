@@ -4,12 +4,7 @@ import com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TestClass17 extends SuperTestClass3 {
 

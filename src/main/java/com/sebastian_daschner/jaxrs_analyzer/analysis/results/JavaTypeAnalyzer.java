@@ -18,7 +18,6 @@ package com.sebastian_daschner.jaxrs_analyzer.analysis.results;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
@@ -29,20 +28,13 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.*;
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.COLLECTION;
 
 /**
  * Analyzes a class (usually a POJO) for it's properties and methods.
@@ -78,7 +70,7 @@ class JavaTypeAnalyzer {
         final String type = ResponseTypeNormalizer.normalizeResponseWrapper(rootType);
         final TypeIdentifier identifier = TypeIdentifier.ofType(type);
 
-        if (!analyzedTypes.contains(type) && (JavaUtils.isAssignableTo(type, Types.COLLECTION) || !isJDKType(type))) {
+        if (!analyzedTypes.contains(type) && (isAssignableTo(type, COLLECTION) || !isJDKType(type))) {
             analyzedTypes.add(type);
             typeRepresentations.put(identifier, analyzeInternal(identifier, type));
         }
@@ -92,12 +84,12 @@ class JavaTypeAnalyzer {
     }
 
     private TypeRepresentation analyzeInternal(final TypeIdentifier identifier, final String type) {
-        if (JavaUtils.isAssignableTo(type, Types.COLLECTION)) {
+        if (isAssignableTo(type, COLLECTION)) {
             final String containedType = ResponseTypeNormalizer.normalizeCollection(type);
             return TypeRepresentation.ofCollection(identifier, analyzeInternal(TypeIdentifier.ofType(containedType), containedType));
         }
 
-        final Class<?> loadedClass = JavaUtils.loadClassFromType(type);
+        final Class<?> loadedClass = loadClassFromType(type);
         if (loadedClass != null && loadedClass.isEnum())
             return TypeRepresentation.ofEnum(identifier, Stream.of(loadedClass.getEnumConstants()).map(o -> (Enum<?>) o).map(Enum::name).toArray(String[]::new));
 
@@ -118,7 +110,7 @@ class JavaTypeAnalyzer {
         final Map<String, TypeIdentifier> properties = new HashMap<>();
 
         final Stream<Class<?>> allSuperTypes = Stream.concat(Stream.of(clazz.getInterfaces()), Stream.of(clazz.getSuperclass()));
-        allSuperTypes.filter(Objects::nonNull).map(Type::getDescriptor).map(t -> analyzeClass(t, JavaUtils.loadClassFromType(t))).forEach(properties::putAll);
+        allSuperTypes.filter(Objects::nonNull).map(Type::getDescriptor).map(t -> analyzeClass(t, loadClassFromType(t))).forEach(properties::putAll);
 
         Stream.concat(relevantFields.stream().map(f -> mapField(f, type)), relevantGetters.stream().map(g -> mapGetter(g, type)))
                 .filter(Objects::nonNull).forEach(p -> {
@@ -133,8 +125,8 @@ class JavaTypeAnalyzer {
         Class<?> current = clazz;
 
         while (current != null) {
-            if (JavaUtils.isAnnotationPresent(current, XmlAccessorType.class))
-                return JavaUtils.getAnnotation(current, XmlAccessorType.class).value();
+            if (isAnnotationPresent(current, XmlAccessorType.class))
+                return getAnnotation(current, XmlAccessorType.class).value();
             current = current.getSuperclass();
         }
 
@@ -150,26 +142,26 @@ class JavaTypeAnalyzer {
             return false;
         }
 
-        if (JavaUtils.isAnnotationPresent(field, XmlElement.class))
+        if (isAnnotationPresent(field, XmlElement.class))
             return true;
 
         final int modifiers = field.getModifiers();
         if (accessType == XmlAccessType.FIELD)
             // always take, unless static or transient
-            return !Modifier.isTransient(modifiers) && !Modifier.isStatic(modifiers) && !JavaUtils.isAnnotationPresent(field, XmlTransient.class);
+            return !Modifier.isTransient(modifiers) && !Modifier.isStatic(modifiers) && !isAnnotationPresent(field, XmlTransient.class);
         else if (accessType == XmlAccessType.PUBLIC_MEMBER)
             // only for public, non-static
-            return Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers) && !JavaUtils.isAnnotationPresent(field, XmlTransient.class);
+            return Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers) && !isAnnotationPresent(field, XmlTransient.class);
 
         return false;
     }
 
     private static <T extends AccessibleObject & Member> boolean hasIgnoreAnnotation(final T member) {
-        return JavaUtils.isAnnotationPresent(member, JsonIgnore.class) || isTypeIgnored(member.getDeclaringClass());
+        return isAnnotationPresent(member, JsonIgnore.class) || isTypeIgnored(member.getDeclaringClass());
     }
 
     private static boolean isTypeIgnored(final Class<?> declaringClass) {
-        return JavaUtils.isAnnotationPresent(declaringClass, JsonIgnoreType.class);
+        return isAnnotationPresent(declaringClass, JsonIgnoreType.class);
     }
 
     /**
@@ -189,13 +181,13 @@ class JavaTypeAnalyzer {
             return false;
         }
 
-        if (JavaUtils.isAnnotationPresent(method, XmlElement.class))
+        if (isAnnotationPresent(method, XmlElement.class))
             return true;
 
         if (accessType == XmlAccessType.PROPERTY)
-            return !JavaUtils.isAnnotationPresent(method, XmlTransient.class);
+            return !isAnnotationPresent(method, XmlTransient.class);
         else if (accessType == XmlAccessType.PUBLIC_MEMBER)
-            return Modifier.isPublic(method.getModifiers()) && !JavaUtils.isAnnotationPresent(method, XmlTransient.class);
+            return Modifier.isPublic(method.getModifiers()) && !isAnnotationPresent(method, XmlTransient.class);
 
         return false;
     }
@@ -228,7 +220,7 @@ class JavaTypeAnalyzer {
     }
 
     private static Pair<String, String> mapField(final Field field, final String containedType) {
-        final String type = JavaUtils.getFieldDescriptor(field, containedType);
+        final String type = getFieldDescriptor(field, containedType);
         if (type == null)
             return null;
 
@@ -236,7 +228,7 @@ class JavaTypeAnalyzer {
     }
 
     private static Pair<String, String> mapGetter(final Method method, final String containedType) {
-        final String returnType = JavaUtils.getReturnType(JavaUtils.getMethodSignature(method), containedType);
+        final String returnType = getReturnType(getMethodSignature(method), containedType);
         if (returnType == null)
             return null;
 

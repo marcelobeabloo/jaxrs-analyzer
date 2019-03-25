@@ -32,6 +32,8 @@ import com.sebastian_daschner.jaxrs_analyzer.model.results.MethodResult;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.JavaDocParameterResolver.*;
+
 /**
  * Interprets the analyzed project results to REST results.
  *
@@ -169,10 +171,10 @@ public class ResultInterpreter {
             return;
 
         methodParameters.forEach(p -> {
-            final Optional<MemberParameterTag> tag = JavaDocParameterResolver.findParameterDoc(p, methodDoc);
+            final Optional<MemberParameterTag> tag = findParameterDoc(p, methodDoc);
 
             final String description = tag.map(MemberParameterTag::getComment)
-                    .orElseGet(() -> JavaDocParameterResolver.findFieldDoc(p, methodDoc.getContainingClassComment())
+                    .orElseGet(() -> findFieldDoc(p, methodDoc.getContainingClassComment())
                             .map(MemberParameterTag::getComment).orElse(null));
 
             p.setDescription(description);
@@ -182,7 +184,7 @@ public class ResultInterpreter {
     private String findRequestBodyDescription(final MethodComment methodDoc) {
         if (methodDoc == null)
             return null;
-        return JavaDocParameterResolver.findRequestBodyDoc(methodDoc).map(MemberParameterTag::getComment).orElse(null);
+        return findRequestBodyDoc(methodDoc).map(MemberParameterTag::getComment).orElse(null);
     }
 
     /**

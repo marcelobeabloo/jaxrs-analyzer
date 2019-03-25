@@ -1,19 +1,8 @@
 package com.sebastian_daschner.jaxrs_analyzer.backend;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Project;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.ResourceMethod;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Resources;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentationVisitor;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonStructure;
-import javax.json.JsonValue;
-import javax.json.JsonWriter;
+import javax.json.*;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonGenerator;
 import java.io.StringReader;
@@ -23,6 +12,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
+import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.toReadableType;
 import static java.util.Collections.singletonMap;
 import static java.util.Comparator.comparing;
 
@@ -117,7 +107,7 @@ public abstract class StringBackend implements Backend {
 
     protected String toReadableComponentType(TypeIdentifier componentType) {
         final String type = componentType.getType();
-        return JavaUtils.toReadableType(CLEAR_COMPONENT_TYPE.matcher(type).replaceAll(""));
+        return toReadableType(CLEAR_COMPONENT_TYPE.matcher(type).replaceAll(""));
     }
 
     private static byte[] serialize(final String output) {

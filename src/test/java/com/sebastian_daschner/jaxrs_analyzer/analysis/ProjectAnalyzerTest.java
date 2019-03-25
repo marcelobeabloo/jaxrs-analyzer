@@ -20,12 +20,7 @@ import com.sebastian_daschner.jaxrs_analyzer.LogProvider;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourceMethodBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResponseBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.HttpMethod;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.ResourceMethod;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Resources;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Response;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,12 +32,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

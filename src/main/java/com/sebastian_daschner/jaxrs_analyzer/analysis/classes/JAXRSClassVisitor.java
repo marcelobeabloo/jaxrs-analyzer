@@ -10,31 +10,17 @@ import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.results.ClassResult;
 import com.sebastian_daschner.jaxrs_analyzer.model.results.MethodResult;
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.*;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Stream;
 
+import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.isAnnotationPresent;
 import static org.objectweb.asm.Opcodes.*;
 
 /**
@@ -150,7 +136,7 @@ public class JAXRSClassVisitor extends ClassVisitor {
                     .filter(Objects::nonNull).anyMatch(a -> a.getClass().isAssignableFrom(annotation.getClass())))
                 return true;
 
-            if (JavaUtils.isAnnotationPresent(annotation.getClass(), HttpMethod.class))
+            if (isAnnotationPresent(annotation.getClass(), HttpMethod.class))
                 return true;
         }
         return false;

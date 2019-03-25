@@ -16,12 +16,7 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.builder;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.HttpMethod;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.MethodParameter;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.ParameterType;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.ResourceMethod;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.Response;
-import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 
 import java.util.Arrays;
 

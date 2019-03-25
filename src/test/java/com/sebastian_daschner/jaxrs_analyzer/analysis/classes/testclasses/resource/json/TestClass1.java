@@ -16,7 +16,6 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.analysis.classes.testclasses.resource.json;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.Element;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.HttpResponse;
 
@@ -24,6 +23,9 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import java.util.Collections;
 import java.util.Set;
+
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.JSON_OBJECT;
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.STRING;
 
 public class TestClass1 {
 
@@ -34,10 +36,10 @@ public class TestClass1 {
 
     public static Set<HttpResponse> getResult() {
         final com.sebastian_daschner.jaxrs_analyzer.model.elements.JsonObject jsonObject = new com.sebastian_daschner.jaxrs_analyzer.model.elements.JsonObject();
-        jsonObject.getStructure().put("key", new Element(Types.STRING, "value"));
+        jsonObject.getStructure().put("key", new Element(STRING, "value"));
 
         final HttpResponse httpResponse = new HttpResponse();
-        httpResponse.getEntityTypes().add(Types.JSON_OBJECT);
+        httpResponse.getEntityTypes().add(JSON_OBJECT);
         httpResponse.getInlineEntities().add(jsonObject);
 
         return Collections.singleton(httpResponse);

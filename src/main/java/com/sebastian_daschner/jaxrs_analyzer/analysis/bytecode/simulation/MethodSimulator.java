@@ -16,36 +16,24 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.analysis.bytecode.simulation;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.Element;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.MethodHandle;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.GetFieldInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.GetStaticInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.Instruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.InvokeDynamicInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.InvokeInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.LoadInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.NewInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.PushInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.SizeChangingInstruction;
-import com.sebastian_daschner.jaxrs_analyzer.model.instructions.StoreInstruction;
+import com.sebastian_daschner.jaxrs_analyzer.model.instructions.*;
 import com.sebastian_daschner.jaxrs_analyzer.model.methods.Method;
 import com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier;
 import org.objectweb.asm.Label;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.determineLeastSpecificType;
+import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.toType;
 
 /**
  * Simulates the instructions of a method. This class is thread-safe.
@@ -135,7 +123,7 @@ public class MethodSimulator {
                 break;
             case NEW:
                 final NewInstruction newInstruction = (NewInstruction) instruction;
-                runtimeStack.push(new Element(JavaUtils.toType(newInstruction.getClassName())));
+                runtimeStack.push(new Element(toType(newInstruction.getClassName())));
                 break;
             case DUP:
                 runtimeStack.push(runtimeStack.peek());
@@ -233,7 +221,7 @@ public class MethodSimulator {
      */
     private void mergeElementStore(final int index, final String type, final Element element) {
         // new element must be created for immutability
-        final String elementType = type.equals(Types.OBJECT) ? JavaUtils.determineLeastSpecificType(element.getTypes().toArray(new String[element.getTypes().size()])) : type;
+        final String elementType = type.equals(Types.OBJECT) ? determineLeastSpecificType(element.getTypes().toArray(new String[element.getTypes().size()])) : type;
         final Element created = new Element(elementType);
         created.merge(element);
         localVariables.merge(index, created, Element::merge);

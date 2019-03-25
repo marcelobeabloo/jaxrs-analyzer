@@ -1,17 +1,13 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.classes.testclasses.resource.object;
 
 import com.sebastian_daschner.jaxrs_analyzer.builder.HttpResponseBuilder;
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.HttpResponse;
+import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TestClass10 {
 

@@ -16,7 +16,6 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.analysis.classes.testclasses.resource.response;
 
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.Element;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.HttpResponse;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.JsonArray;
@@ -30,6 +29,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
+
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
 
 public class TestClass40 {
 
@@ -58,18 +59,18 @@ public class TestClass40 {
         final HttpResponse result = new HttpResponse();
 
         result.getStatuses().add(200);
-        result.getEntityTypes().add(Types.JSON_OBJECT);
+        result.getEntityTypes().add(JSON_OBJECT);
 
         final JsonArray jsonArray = new JsonArray();
-        jsonArray.getElements().add(new Element(Types.STRING, "test1"));
+        jsonArray.getElements().add(new Element(STRING, "test1"));
 
         final JsonArray nestedArray = new JsonArray();
-        nestedArray.getElements().add(new Element(Types.STRING, "test2"));
-        jsonArray.getElements().add(new Element(Types.JSON_ARRAY, nestedArray));
+        nestedArray.getElements().add(new Element(STRING, "test2"));
+        jsonArray.getElements().add(new Element(JSON_ARRAY, nestedArray));
 
         JsonObject jsonObject = new JsonObject();
-        jsonObject.getStructure().put("test", new Element(Types.OBJECT, null));
-        jsonObject.getStructure().put("array", new Element(Types.JSON_ARRAY, jsonArray));
+        jsonObject.getStructure().put("test", new Element(OBJECT, null));
+        jsonObject.getStructure().put("array", new Element(JSON_ARRAY, jsonArray));
 
         result.getInlineEntities().add(jsonObject);
 
