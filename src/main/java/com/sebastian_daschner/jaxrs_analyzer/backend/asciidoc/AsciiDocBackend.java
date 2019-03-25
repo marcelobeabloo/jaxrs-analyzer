@@ -86,7 +86,7 @@ public class AsciiDocBackend extends StringBackend {
                 .append("`, `")
                 .append(toReadableType(p.getType().getType()))
                 .append("` + \n")
-                .append(p.getDescription() != null ? "*Description*: " + p.getDescription() + "` + \n" : ""));
+                .append(!StringUtils.isBlank(p.getDescription()) ? "*Description*: " + p.getDescription() + " + \n" : ""));
 
     }
 
