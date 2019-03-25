@@ -18,8 +18,7 @@ class ResponseCommentExtractor {
             int status = Integer.parseInt(statusPart);
             return Pair.of(status, commentText.substring(statusPart.length()).trim());
         } catch (Exception e) {
-            LogProvider.info("Warning: malformed @response JavaDoc tag: '@response " + comment + "'");
-            LogProvider.debug(e);
+            LogProvider.info("@response JavaDoc tag was not found for : '"+ comment + "'. Using @return pattern with the default http status code 200");
             return extractByReturnAnnotation(comment);
         }
     }
