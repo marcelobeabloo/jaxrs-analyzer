@@ -36,7 +36,7 @@ public class AsciiDocBackend extends StringBackend {
             builder.append(baseUri).append('/');
         builder.append(resource).append("`\n\n");
         if( !StringUtils.isBlank( resourceMethod.getDescription() ) )
-            builder.append( "=== Description: " ).append( resourceMethod.getDescription() ).append( "\n\n" );
+            builder.append( "=== Description" ).append("\n").append( resourceMethod.getDescription() ).append( "\n\n" );
         if (resourceMethod.isDeprecated())
             builder.append("CAUTION: deprecated\n\n");
     }
@@ -86,7 +86,7 @@ public class AsciiDocBackend extends StringBackend {
                 .append("`, `")
                 .append(toReadableType(p.getType().getType()))
                 .append("` + \n")
-                .append(!StringUtils.isBlank(p.getDescription()) ? "*Description*: " + p.getDescription() + " + \n" : ""));
+                .append(!StringUtils.isBlank(p.getDescription()) ? "*Description*: " + p.getDescription() + "\n\n" : ""));
 
     }
 
@@ -108,14 +108,12 @@ public class AsciiDocBackend extends StringBackend {
                 builder.append("*Response Body*: ").append('(').append(toTypeOrCollection(response.getResponseBody())).append(")");
                 Optional.ofNullable(resources.getTypeRepresentations().get(response.getResponseBody())).ifPresent(
                         this::generateSample);
-                builder.append("\n");
             }
 
             if (e.getValue().getDescription() != null) {
-                builder.append("*Description*: ").append(e.getValue().getDescription());
+                builder.append(e.getValue().getDescription()).append("\n\n");
             }
 
-            builder.append('\n');
         });
     }
 

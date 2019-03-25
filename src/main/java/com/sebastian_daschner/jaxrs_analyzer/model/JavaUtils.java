@@ -18,6 +18,7 @@ package com.sebastian_daschner.jaxrs_analyzer.model;
 
 import com.sebastian_daschner.jaxrs_analyzer.LogProvider;
 import com.sebastian_daschner.jaxrs_analyzer.analysis.classes.ContextClassReader;
+import com.sebastian_daschner.jaxrs_analyzer.utils.StringUtils;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.util.TraceSignatureVisitor;
@@ -283,7 +284,7 @@ public final class JavaUtils {
         reader.acceptType(visitor);
         String declaration = visitor.getDeclaration();
 
-        if (("true").equals(System.getProperty("simpleType"))) {
+        if (StringUtils.isBlank(System.getProperty("fullPackage"))) {
             //return single type
             if(declaration.indexOf(".") != declaration.lastIndexOf(".")) {
                 declaration = declaration.substring(declaration.lastIndexOf(".") + 1 , declaration.length());
