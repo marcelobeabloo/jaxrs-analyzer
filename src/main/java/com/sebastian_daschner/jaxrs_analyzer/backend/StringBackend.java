@@ -43,6 +43,7 @@ public abstract class StringBackend implements Backend {
     protected String projectName;
     protected String projectVersion;
     protected boolean prettify;
+    protected boolean appendHeader = true;
     private static final String DEFAULT_NAME = "project";
 
     @Override
@@ -70,6 +71,7 @@ public abstract class StringBackend implements Backend {
         resources = project.getResources();
         projectName = project.getName();
         projectVersion = project.getVersion();
+        appendHeader = project.isAppendHeader();
     }
 
     private String renderInternal() {
@@ -81,7 +83,7 @@ public abstract class StringBackend implements Backend {
     }
 
     private void appendHeader() {
-        if (!projectName.equals(DEFAULT_NAME)) {
+        if (appendHeader) {
             appendFirstLine();
             builder.append(projectVersion).append("\n\n");
         }

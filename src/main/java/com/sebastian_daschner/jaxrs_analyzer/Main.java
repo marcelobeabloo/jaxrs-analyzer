@@ -147,6 +147,9 @@ public class Main {
                         case "-a":
                             addAttribute(args[++i]);
                             break;
+                        case "-appendHeader":
+                            analysis.setAppendHeader(Boolean.parseBoolean(args[++i]));
+                            break;
                         default:
                             throw new IllegalArgumentException("Unknown option " + args[i]);
                     }

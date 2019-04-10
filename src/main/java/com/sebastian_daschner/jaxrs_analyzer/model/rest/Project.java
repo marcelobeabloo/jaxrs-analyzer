@@ -12,6 +12,7 @@ public class Project {
     private final String name;
     private final String version;
     private final Resources resources;
+    private boolean appendHeader = true;
 
     public Project(final String name, final String version, final Resources resources) {
         StringUtils.requireNonBlank(name);
@@ -19,6 +20,15 @@ public class Project {
         this.name = name;
         this.version = version;
         this.resources = resources;
+    }
+
+    public Project(final String name, final String version, final Resources resources, boolean appendHeader) {
+        StringUtils.requireNonBlank(name);
+        StringUtils.requireNonBlank(version);
+        this.name = name;
+        this.version = version;
+        this.resources = resources;
+        this.appendHeader = appendHeader;
     }
 
     public String getName() {
@@ -33,4 +43,7 @@ public class Project {
         return resources;
     }
 
+    public boolean isAppendHeader() {
+        return appendHeader;
+    }
 }

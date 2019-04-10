@@ -51,7 +51,7 @@ public class JAXRSAnalyzer {
             return;
         }
 
-        final Project project = new Project(analysis.projectName, analysis.projectVersion, resources);
+        final Project project = new Project(analysis.projectName, analysis.projectVersion, resources, analysis.appendHeader);
         final byte[] output = analysis.backend.render(project);
 
         if (analysis.outputLocation != null) {
@@ -97,6 +97,7 @@ public class JAXRSAnalyzer {
         private final Set<String> ignoredResources = new HashSet<>();
         private String projectName;
         private String projectVersion;
+        private boolean appendHeader;
         private Path outputLocation;
         private Backend backend;
 
@@ -143,6 +144,10 @@ public class JAXRSAnalyzer {
 
         public Backend getBackend() {
             return backend;
+        }
+
+        public void setAppendHeader(boolean appendHeader) {
+            this.appendHeader = appendHeader;
         }
     }
 
