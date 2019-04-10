@@ -3,7 +3,7 @@
 
     <groupId>com.sebastian-daschner</groupId>
     <artifactId>jaxrs-analyzer</artifactId>
-    <version>0.18</version>
+    <version>0.19</version>
     <name>JAX-RS Analyzer</name>
     <packaging>jar</packaging>
 

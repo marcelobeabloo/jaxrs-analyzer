@@ -51,11 +51,11 @@ public class AsciiDocBackend extends StringBackend {
             builder.append(resourceMethod.getRequestMediaTypes().isEmpty() ? TYPE_WILDCARD : toString(resourceMethod.getRequestMediaTypes()));
             builder.append("` + \n");
 
-            builder.append("*Request Body*: (").append(toTypeOrCollection(resourceMethod.getRequestBody()));
+            builder.append("*Request Body*: (").append(toTypeOrCollection(resourceMethod.getRequestBody())).append(")");
+
             if (resourceMethod.getRequestBodyDescription() != null) {
-                builder.append(" - ").append(resourceMethod.getRequestBodyDescription());
+                builder.append("\n\n").append(resourceMethod.getRequestBodyDescription()).append("\n\n");
             }
-            builder.append(")");
 
             Optional.ofNullable(resources.getTypeRepresentations().get(resourceMethod.getRequestBody())).ifPresent(
                     this::generateSample);
@@ -84,7 +84,9 @@ public class AsciiDocBackend extends StringBackend {
                 .append(name)
                 .append("*: `")
                 .append(p.getName())
-                .append("`, `")
+                .append("` + \n")
+                .append("*Type*: ")
+                .append("`")
                 .append(toReadableType(p.getType().getType()))
                 .append("` + \n")
                 .append(!StringUtils.isBlank(p.getDescription()) ? "*Description*: " + p.getDescription() + "\n\n" : ""));
@@ -107,14 +109,12 @@ public class AsciiDocBackend extends StringBackend {
 
             if (response.getResponseBody() != null) {
                 builder.append("*Response Body*: ").append('(').append(toTypeOrCollection(response.getResponseBody())).append(")");
+                if (e.getValue().getDescription() != null) {
+                    builder.append("\n\n").append(e.getValue().getDescription()).append("\n\n");
+                }
                 Optional.ofNullable(resources.getTypeRepresentations().get(response.getResponseBody())).ifPresent(
                         this::generateSample);
             }
-
-            if (e.getValue().getDescription() != null) {
-                builder.append(e.getValue().getDescription()).append("\n\n");
-            }
-
         });
     }
 
