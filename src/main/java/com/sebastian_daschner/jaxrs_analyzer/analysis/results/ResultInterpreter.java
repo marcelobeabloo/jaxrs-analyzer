@@ -153,7 +153,14 @@ public class ResultInterpreter {
     }
 
     private void addResponseComment(Integer status, String comment, ResourceMethod resourceMethod) {
-        resourceMethod.getResponses().put(status, new Response(null, comment));
+
+        if (resourceMethod.getResponses().get(status) != null) {
+            resourceMethod.getResponses().put(status,
+                                            new Response(resourceMethod.getResponses().get(status).getResponseBody(), comment));
+        } else {
+            resourceMethod.getResponses().put(status, new Response(null, comment));
+        }
+
     }
 
     private boolean hasDeprecationTag(MethodComment doc) {

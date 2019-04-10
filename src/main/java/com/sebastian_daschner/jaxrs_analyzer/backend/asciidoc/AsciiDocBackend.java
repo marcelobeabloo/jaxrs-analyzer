@@ -29,6 +29,7 @@ public class AsciiDocBackend extends StringBackend {
     private static final String DOCUMENT_TITLE = "= REST resources of ";
     private static final String TYPE_WILDCARD = "\\*/*";
 
+
     @Override
     protected void appendMethod(final String baseUri, final String resource, final ResourceMethod resourceMethod) {
         builder.append("== `").append(resourceMethod.getMethod()).append(' ');

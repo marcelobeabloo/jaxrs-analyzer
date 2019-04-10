@@ -24,9 +24,20 @@ class ResponseCommentExtractor {
     }
 
     static Pair<Integer, String> extractByReturnAnnotation(String comment) {
-        String commentText = comment.trim();
+        String commentText = removeLinkComment(comment.trim());
         int status = 200;
         return Pair.of(status, commentText);
+    }
+
+    private static String removeLinkComment(String comment) {
+
+        if (comment.contains("{@link")) {
+            return comment.replace("{@link", "").replace("}", "")
+                    .replace("  ", " ");
+        }
+
+        return comment;
+
     }
 
 
