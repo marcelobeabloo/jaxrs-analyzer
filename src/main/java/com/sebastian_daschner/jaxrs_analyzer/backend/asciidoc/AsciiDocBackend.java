@@ -88,8 +88,7 @@ public class AsciiDocBackend extends StringBackend {
                 .append("*Type*: ")
                 .append("`")
                 .append(toReadableType(p.getType().getType()))
-                .append("` + \n")
-                .append(!StringUtils.isBlank(p.getDescription()) ? "*Description*: " + p.getDescription() + "\n\n" : ""));
+                .append(!StringUtils.isBlank(p.getDescription()) ? "` + \n *Description*: " + p.getDescription() + "\n\n" : ""));
 
     }
 
@@ -114,6 +113,8 @@ public class AsciiDocBackend extends StringBackend {
                 }
                 Optional.ofNullable(resources.getTypeRepresentations().get(response.getResponseBody())).ifPresent(
                         this::generateSample);
+            } else if (e.getValue().getDescription() != null) {
+                builder.append("\n\n").append(e.getValue().getDescription()).append("\n\n");
             }
         });
     }
