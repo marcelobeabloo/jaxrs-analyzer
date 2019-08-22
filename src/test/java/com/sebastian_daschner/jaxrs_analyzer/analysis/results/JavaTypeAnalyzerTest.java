@@ -20,16 +20,14 @@ import com.sebastian_daschner.jaxrs_analyzer.analysis.utils.TestClassUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
+import java.io.IOException;
+import java.util.*;
+import javax.ws.rs.NotFoundException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import javax.ws.rs.NotFoundException;
-import java.io.IOException;
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public class JavaTypeAnalyzerTest {
@@ -78,7 +76,7 @@ public class JavaTypeAnalyzerTest {
     public void test() {
         final TypeIdentifier actualIdentifier;
         try {
-            actualIdentifier = classUnderTest.analyze(JavaUtils.toType(testClassName));
+            actualIdentifier = classUnderTest.analyze(JavaUtils.toType(testClassName), Collections.emptyMap());
         } catch (Exception e) {
             System.err.println("failed for " + testClassSimpleName);
             throw e;

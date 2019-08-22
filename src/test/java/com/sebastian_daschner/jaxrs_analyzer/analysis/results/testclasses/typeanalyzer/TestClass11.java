@@ -17,15 +17,15 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results.testclasses.typeanalyzer;
 
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TestClass11 {
@@ -35,12 +35,12 @@ public class TestClass11 {
     private TestClass11 child;
 
     public static Set<TypeRepresentation> expectedTypeRepresentations() {
-        final Map<String, TypeIdentifier> properties = new HashMap<>();
+        final Map<String, TypeDefinition> properties = new HashMap<>();
 
         final TypeIdentifier identifier = expectedIdentifier();
-        properties.put("first", TypeIdentifier.ofType(Types.PRIMITIVE_BOOLEAN));
-        properties.put("second", TypeIdentifier.ofType(Types.PRIMITIVE_INT));
-        properties.put("child", identifier);
+        properties.put("first", TypeDefinition.of(TypeIdentifier.ofType(Types.PRIMITIVE_BOOLEAN)));
+        properties.put("second", TypeDefinition.of(TypeIdentifier.ofType(Types.PRIMITIVE_INT)));
+        properties.put("child", TypeDefinition.of(identifier));
 
         return Collections.singleton(TypeRepresentation.ofConcrete(identifier, properties));
     }

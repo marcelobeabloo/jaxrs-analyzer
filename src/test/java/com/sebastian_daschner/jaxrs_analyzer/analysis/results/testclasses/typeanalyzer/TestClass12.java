@@ -17,12 +17,12 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results.testclasses.typeanalyzer;
 
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
+import java.util.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import java.util.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TestClass12 {
@@ -37,18 +37,18 @@ public class TestClass12 {
     }
 
     public static Set<TypeRepresentation> expectedTypeRepresentations() {
-        final Map<String, TypeIdentifier> properties = new HashMap<>();
+        final Map<String, TypeDefinition> properties = new HashMap<>();
 
         final TypeIdentifier innerTestIdentifier = TypeIdentifier.ofType("Lcom/sebastian_daschner/jaxrs_analyzer/analysis/results/testclasses/typeanalyzer/TestClass12$InnerTestClass;");
-        properties.put("first", TypeIdentifier.ofType(Types.PRIMITIVE_INT));
-        properties.put("child", innerTestIdentifier);
+        properties.put("first", TypeDefinition.of(TypeIdentifier.ofType(Types.PRIMITIVE_INT)));
+        properties.put("child", TypeDefinition.of(innerTestIdentifier));
 
         final TypeIdentifier testClass12Identifier = expectedIdentifier();
         final TypeRepresentation testClass12 = TypeRepresentation.ofConcrete(testClass12Identifier, properties);
 
-        final Map<String, TypeIdentifier> innerProperties = new HashMap<>();
-        innerProperties.put("second", TypeIdentifier.ofType(Types.PRIMITIVE_INT));
-        innerProperties.put("child", testClass12Identifier);
+        final Map<String, TypeDefinition> innerProperties = new HashMap<>();
+        innerProperties.put("second", TypeDefinition.of(TypeIdentifier.ofType(Types.PRIMITIVE_INT)));
+        innerProperties.put("child", TypeDefinition.of(testClass12Identifier));
 
         final TypeRepresentation innerTestClass = TypeRepresentation.ofConcrete(innerTestIdentifier, innerProperties);
 

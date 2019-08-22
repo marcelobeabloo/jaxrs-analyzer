@@ -4,7 +4,7 @@ import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.MethodParameter;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +28,7 @@ class StringParameterResolver {
             if (isStringOrPrimitive(p.getType()))
                 return;
 
-            final TypeIdentifier identifier = javaTypeAnalyzer.analyze(p.getType().getType());
+            final TypeIdentifier identifier = javaTypeAnalyzer.analyze(p.getType().getType(), Collections.emptyMap());
             final TypeRepresentation typeRepresentation = typeRepresentations.get(identifier);
 
             if (isEnum(typeRepresentation))
@@ -39,7 +39,7 @@ class StringParameterResolver {
                 if (isStringOrPrimitive(componentType) || isEnum(typeRepresentations.get(componentType)))
                     return;
 
-                p.setType(javaTypeAnalyzer.analyze("Ljava/util/List<Ljava/lang/String;>;"));
+                p.setType(javaTypeAnalyzer.analyze("Ljava/util/List<Ljava/lang/String;>;", Collections.emptyMap()));
                 return;
             }
 

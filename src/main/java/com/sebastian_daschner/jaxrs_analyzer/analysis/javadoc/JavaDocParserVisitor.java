@@ -9,6 +9,7 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -19,18 +20,16 @@ import com.sebastian_daschner.jaxrs_analyzer.model.javadoc.ClassComment;
 import com.sebastian_daschner.jaxrs_analyzer.model.javadoc.MemberParameterTag;
 import com.sebastian_daschner.jaxrs_analyzer.model.javadoc.MethodComment;
 import com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier;
+import static com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier.ofNonStatic;
+import static com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier.ofStatic;
 import com.sebastian_daschner.jaxrs_analyzer.utils.Pair;
 import com.sebastian_daschner.jaxrs_analyzer.utils.StringUtils;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier.ofNonStatic;
-import static com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier.ofStatic;
 
 /**
  * @author Sebastian Daschner
@@ -40,10 +39,11 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
     private String packageName;
     private String className;
     private final Map<MethodIdentifier, MethodComment> methodComments;
-    private final Map<String, ClassComment> classComments = new HashMap<>();
+    private final Map<String, ClassComment> classComments;
 
-    public JavaDocParserVisitor(Map<MethodIdentifier, MethodComment> methodComments) {
+    public JavaDocParserVisitor(Map<MethodIdentifier, MethodComment> methodComments, Map<String, ClassComment> classComments) {
         this.methodComments = methodComments;
+        this.classComments = classComments;
     }
 
     @Override
@@ -99,7 +99,8 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
             classComment = new ClassComment();
             classComments.put(className, classComment);
         }
-        classComment.getFieldComments().add(createMemberParamTag(javadoc.getDescription(), field.getAnnotations().stream()));
+        String fieldName = field.getVariables().get(0).getNameAsString();
+        classComment.getFieldComments().add(createMemberParamTag(fieldName, javadoc.getDescription(), field.getAnnotations().stream()));
     }
 
     @Override
@@ -114,9 +115,11 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
     private void recordMethodComment(Javadoc javadoc, MethodDeclaration method) {
         MethodIdentifier identifier = calculateMethodIdentifier(method);
         String comment = javadoc.getDescription().toText();
+        Optional<AnnotationExpr> annotOperation = method.getAnnotationByName("Operation");
+        String operation = annotOperation.isPresent() ? getAnnotationValue(annotOperation.get()) : "Undefined";
         List<MemberParameterTag> tags = createMethodParameterTags(javadoc, method);
         Map<Integer, String> responseComments = createResponseComments(javadoc);
-        methodComments.put(identifier, new MethodComment(comment, tags, responseComments, classComments.get(className), isDeprecated(javadoc)));
+        methodComments.put(identifier, new MethodComment(comment, tags, responseComments, classComments.get(className), isDeprecated(javadoc), operation));
     }
 
     private List<MemberParameterTag> createMethodParameterTags(Javadoc javadoc, MethodDeclaration method) {
@@ -132,15 +135,15 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
                 .map(NodeList::stream)
                 .orElseGet(Stream::empty);
 
-        return createMemberParamTag(tag.getContent(), annotations);
+        return createMemberParamTag(tag.getName().orElse("unknown"), tag.getContent(), annotations);
     }
 
-    private MemberParameterTag createMemberParamTag(JavadocDescription javadocDescription, Stream<AnnotationExpr> annotationStream) {
+    private MemberParameterTag createMemberParamTag(String name, JavadocDescription javadocDescription, Stream<AnnotationExpr> annotationStream) {
         Map<String, String> annotations = annotationStream
                 .filter(Expression::isSingleMemberAnnotationExpr)
                 .collect(Collectors.toMap(a -> a.getName().getIdentifier(),
                         this::createMemberParamValue));
-        return new MemberParameterTag(javadocDescription.toText(), annotations);
+        return new MemberParameterTag(name, javadocDescription.toText(), annotations);
     }
 
     private String createMemberParamValue(AnnotationExpr a) {
@@ -180,6 +183,27 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
             return ofStatic(className, method.getNameAsString(), returnType, parameters);
         }
         return ofNonStatic(className, method.getNameAsString(), returnType, parameters);
+    }
+
+    private String getAnnotationValue(AnnotationExpr annotationExpr) {
+        Expression expression = getParameter(annotationExpr, "value");
+        if (expression == null) {
+            List<Expression> children = annotationExpr.getChildNodesByType(Expression.class);
+            if (!children.isEmpty()) {
+                expression = children.get(0);
+            }
+        }
+        return Objects.isNull(expression) ? "" : expression.asStringLiteralExpr().getValue();
+    }
+
+    public static Expression getParameter(AnnotationExpr annotationExpr, String parameterName) {
+        List<MemberValuePair> children = annotationExpr.getChildNodesByType(MemberValuePair.class);
+        for (MemberValuePair memberValuePair : children) {
+            if (parameterName.equals(memberValuePair.getNameAsString())) {
+                return memberValuePair.getValue();
+            }
+        }
+        return null;
     }
 
 }

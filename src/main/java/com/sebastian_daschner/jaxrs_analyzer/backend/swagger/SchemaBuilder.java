@@ -16,20 +16,19 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.backend.swagger;
 
+import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.mapKeyComparator;
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentationVisitor;
 import com.sebastian_daschner.jaxrs_analyzer.utils.Pair;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.mapKeyComparator;
-import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
 
 /**
  * Creates Swagger schema type definitions.
@@ -60,8 +59,8 @@ class SchemaBuilder {
      * @param identifier The identifier
      * @return The schema JSON object builder with the needed properties
      */
-    JsonObjectBuilder build(final TypeIdentifier identifier) {
-        final SwaggerType type = toSwaggerType(identifier.getType());
+    JsonObjectBuilder build(final TypeDefinition definition) {
+        final SwaggerType type = toSwaggerType(definition.getTypeIdentifier().getType());
         switch (type) {
             case BOOLEAN:
             case INTEGER:
@@ -117,7 +116,7 @@ class SchemaBuilder {
 
         };
 
-        final TypeRepresentation representation = typeRepresentations.get(identifier);
+        final TypeRepresentation representation = typeRepresentations.get(definition.getTypeIdentifier());
         if (representation == null)
             builder.add("type", "object");
         else
@@ -151,7 +150,7 @@ class SchemaBuilder {
         addObject(builder, representation.getIdentifier(), representation.getProperties());
     }
 
-    private void addObject(final JsonObjectBuilder builder, final TypeIdentifier identifier, final Map<String, TypeIdentifier> properties) {
+    private void addObject(final JsonObjectBuilder builder, final TypeIdentifier identifier, final Map<String, TypeDefinition> properties) {
         final String definition = definitionNameBuilder.buildDefinitionName(identifier.getName(), jsonDefinitions);
 
         if (jsonDefinitions.containsKey(definition)) {

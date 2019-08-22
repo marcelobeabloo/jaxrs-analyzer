@@ -16,30 +16,28 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.backend.swagger;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.MODEL_IDENTIFIER;
 import com.sebastian_daschner.jaxrs_analyzer.backend.Backend;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend.INLINE_PRETTIFY;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.swagger.SwaggerOptions.*;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.swagger.TypeIdentifierTestSupport.*;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourceMethodBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourcesBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResponseBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-import javax.json.Json;
-import javax.json.JsonStructure;
 import java.io.StringReader;
 import java.util.Collection;
+import static java.util.Collections.singletonMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-
-import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.MODEL_IDENTIFIER;
-import static com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend.INLINE_PRETTIFY;
-import static com.sebastian_daschner.jaxrs_analyzer.backend.swagger.SwaggerOptions.*;
-import static com.sebastian_daschner.jaxrs_analyzer.backend.swagger.TypeIdentifierTestSupport.*;
-import static java.util.Collections.singletonMap;
+import javax.json.Json;
+import javax.json.JsonStructure;
 import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
 public class SwaggerBackendTest {
@@ -81,7 +79,7 @@ public class SwaggerBackendTest {
         final TypeIdentifier intIdentifier = TypeIdentifier.ofType(Types.PRIMITIVE_INT);
 
         TypeIdentifier identifier;
-        Map<String, TypeIdentifier> properties = new HashMap<>();
+        Map<String, TypeDefinition> properties = new HashMap<>();
 
         add(data, ResourcesBuilder.withBase("rest")
                         .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.GET)
@@ -99,8 +97,8 @@ public class SwaggerBackendTest {
 
         resetTypeIdentifierCounter();
         identifier = TypeIdentifier.ofDynamic();
-        properties.put("key", stringIdentifier);
-        properties.put("another", intIdentifier);
+        properties.put("key", TypeDefinition.of(stringIdentifier));
+        properties.put("another", TypeDefinition.of(intIdentifier));
         add(data, ResourcesBuilder.withBase("rest").andTypeRepresentation(identifier, TypeRepresentation.ofConcrete(identifier, properties))
                         .andResource("res2", ResourceMethodBuilder.withMethod(HttpMethod.GET)
                                 .andResponse(200, ResponseBuilder.withResponseBody(identifier).build()).build()).build(),
@@ -109,8 +107,8 @@ public class SwaggerBackendTest {
         resetTypeIdentifierCounter();
         identifier = TypeIdentifier.ofDynamic();
         properties = new HashMap<>();
-        properties.put("key", stringIdentifier);
-        properties.put("another", intIdentifier);
+        properties.put("key", TypeDefinition.of(stringIdentifier));
+        properties.put("another", TypeDefinition.of(intIdentifier));
         add(data, ResourcesBuilder.withBase("rest")
                         .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(TypeIdentifier.ofDynamic(), properties)))
                         .andResource("res3", ResourceMethodBuilder.withMethod(HttpMethod.GET)
@@ -128,7 +126,7 @@ public class SwaggerBackendTest {
         resetTypeIdentifierCounter();
         identifier = TypeIdentifier.ofDynamic();
         properties = new HashMap<>();
-        properties.put("key", stringIdentifier);
+        properties.put("key", TypeDefinition.of(stringIdentifier));
         add(data, ResourcesBuilder.withBase("rest")
                         .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(identifier, properties)))
                         .andResource("res5", ResourceMethodBuilder.withMethod(HttpMethod.GET)
@@ -136,8 +134,8 @@ public class SwaggerBackendTest {
                 "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"project name\"},\"host\":\"example.com\",\"basePath\":\"/rest\",\"schemes\":[\"http\"],\"paths\":{\"/res5\":{\"get\":{\"consumes\":[],\"produces\":[],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"OK\",\"headers\":{},\"schema\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/definitions/JsonObject\"}}}}}}},\"definitions\":{\"JsonObject\":{\"properties\":{\"key\":{\"type\":\"string\"}}}}}");
 
         properties = new HashMap<>();
-        properties.put("name", stringIdentifier);
-        properties.put("value", intIdentifier);
+        properties.put("name", TypeDefinition.of(stringIdentifier));
+        properties.put("value", TypeDefinition.of(intIdentifier));
         add(data, ResourcesBuilder.withBase("rest")
                         .andTypeRepresentation(MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties))
                         .andResource("res6", ResourceMethodBuilder.withMethod(HttpMethod.GET)
@@ -153,8 +151,8 @@ public class SwaggerBackendTest {
 
         final TypeIdentifier dynamicIdentifier = TypeIdentifier.ofDynamic();
         properties = new HashMap<>();
-        properties.put("name", stringIdentifier);
-        properties.put("value", intIdentifier);
+        properties.put("name", TypeDefinition.of(stringIdentifier));
+        properties.put("value", TypeDefinition.of(intIdentifier));
         add(data, ResourcesBuilder.withBase("rest")
                         .andTypeRepresentation(dynamicIdentifier, TypeRepresentation.ofCollection(MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties)))
                         .andResource("res8", ResourceMethodBuilder.withMethod(HttpMethod.POST).andRequestBodyType(dynamicIdentifier).andAcceptMediaTypes("application/json")
@@ -236,9 +234,8 @@ public class SwaggerBackendTest {
                                 .andQueryParam("q1", identifier.getType())
                                 .andQueryParam("q2", secondIdentifier.getType())
                                 .build()
-                        ).andTypeRepresentation(identifier, TypeRepresentation.ofEnum(identifier, "APPLE", "BANANA"))
-                        .andTypeRepresentation(secondIdentifier, TypeRepresentation.ofEnum(secondIdentifier, "APPLE", "BANANA"))
-                        .build(),
+                ).andTypeRepresentation(identifier, TypeRepresentation.ofEnum(TypeDefinition.of(identifier), "APPLE", "BANANA"))
+                .andTypeRepresentation(secondIdentifier, TypeRepresentation.ofEnum(TypeDefinition.of(secondIdentifier), "APPLE", "BANANA"))                        .build(),
                 "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"project name\"},\"host\":\"example.com\",\"basePath\":\"/rest\",\"schemes\":[\"http\"],\"paths\":{\"/res18\":{\"get\":{\"consumes\":[],\"produces\":[],\"parameters\":[{\"type\":\"string\",\"enum\":[\"APPLE\",\"BANANA\"],\"name\":\"q1\",\"in\":\"query\",\"required\":true},{\"type\":\"string\",\"enum\":[\"APPLE\",\"BANANA\"],\"name\":\"q2\",\"in\":\"query\",\"required\":true}],\"responses\":{}}}},\"definitions\":{}}"
         );
 

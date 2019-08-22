@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.sebastian_daschner.jaxrs_analyzer.model.results;
 
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.HttpResponse;
@@ -22,10 +21,11 @@ import com.sebastian_daschner.jaxrs_analyzer.model.javadoc.MethodComment;
 import com.sebastian_daschner.jaxrs_analyzer.model.methods.MethodIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.HttpMethod;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.MethodParameter;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,6 +42,8 @@ public class MethodResult {
     private final List<Instruction> instructions = new ArrayList<>();
     private String path;
     private String requestBodyType;
+    private final Map<String, String> requestBodyDoc = new HashMap<>();
+    private final Map<String, String> responseBodyDoc = new HashMap<>();
     private MethodIdentifier originalMethodSignature;
     private HttpMethod httpMethod;
     private ClassResult subResource;
@@ -83,6 +85,14 @@ public class MethodResult {
 
     public void setRequestBodyType(final String requestBodyType) {
         this.requestBodyType = requestBodyType;
+    }
+
+    public Map<String, String> getRequestBodyDoc() {
+        return requestBodyDoc;
+    }
+
+    public Map<String, String> getResponseBodyDoc() {
+        return responseBodyDoc;
     }
 
     public MethodIdentifier getOriginalMethodSignature() {
@@ -136,24 +146,47 @@ public class MethodResult {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         final MethodResult that = (MethodResult) o;
 
-        if (!requestMediaTypes.equals(that.requestMediaTypes)) return false;
-        if (!responseMediaTypes.equals(that.responseMediaTypes)) return false;
-        if (!methodParameters.equals(that.methodParameters)) return false;
-        if (!responses.equals(that.responses)) return false;
+        if (!requestMediaTypes.equals(that.requestMediaTypes)) {
+            return false;
+        }
+        if (!responseMediaTypes.equals(that.responseMediaTypes)) {
+            return false;
+        }
+        if (!methodParameters.equals(that.methodParameters)) {
+            return false;
+        }
+        if (!responses.equals(that.responses)) {
+            return false;
+        }
         // TODO double-check
 //        if (!instructions.equals(that.instructions)) return false;
-        if (path != null ? !path.equals(that.path) : that.path != null) return false;
-        if (requestBodyType != null ? !requestBodyType.equals(that.requestBodyType) : that.requestBodyType != null)
+        if (path != null ? !path.equals(that.path) : that.path != null) {
             return false;
-        if (httpMethod != that.httpMethod) return false;
-        if (subResource != null ? !subResource.equals(that.subResource) : that.subResource != null) return false;
-        if (methodDoc != null ? !methodDoc.equals(that.methodDoc) : that.methodDoc != null) return false;
-        if (deprecated != that.deprecated) return false;
+        }
+        if (requestBodyType != null ? !requestBodyType.equals(that.requestBodyType) : that.requestBodyType != null) {
+            return false;
+        }
+        if (httpMethod != that.httpMethod) {
+            return false;
+        }
+        if (subResource != null ? !subResource.equals(that.subResource) : that.subResource != null) {
+            return false;
+        }
+        if (methodDoc != null ? !methodDoc.equals(that.methodDoc) : that.methodDoc != null) {
+            return false;
+        }
+        if (deprecated != that.deprecated) {
+            return false;
+        }
         return true;
     }
 
@@ -175,20 +208,20 @@ public class MethodResult {
 
     @Override
     public String toString() {
-        return "MethodResult{" +
-                "requestMediaTypes=" + requestMediaTypes +
-                ", responseMediaTypes=" + responseMediaTypes +
-                ", methodParameters=" + methodParameters +
-                ", responses=" + responses +
-//                ", instructions=" + instructions +
-                ", path='" + path + '\'' +
-                ", requestBodyType='" + requestBodyType + '\'' +
-                ", httpMethod=" + httpMethod +
-                ", subResource=" + subResource +
-                ", methodDoc=" + methodDoc +
-                ", parentResource=" + (parentResource == null ? "null" : "notNull") +
-                ", deprecated=" + deprecated +
-                '}';
+        return "MethodResult{"
+                + "requestMediaTypes=" + requestMediaTypes
+                + ", responseMediaTypes=" + responseMediaTypes
+                + ", methodParameters=" + methodParameters
+                + ", responses=" + responses
+                + //                ", instructions=" + instructions +
+                ", path='" + path + '\''
+                + ", requestBodyType='" + requestBodyType + '\''
+                + ", httpMethod=" + httpMethod
+                + ", subResource=" + subResource
+                + ", methodDoc=" + methodDoc
+                + ", parentResource=" + (parentResource == null ? "null" : "notNull")
+                + ", deprecated=" + deprecated
+                + '}';
     }
 
 }

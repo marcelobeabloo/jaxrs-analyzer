@@ -17,13 +17,13 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results.testclasses.typeanalyzer;
 
 import com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
+import java.util.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.*;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -44,20 +44,20 @@ public class TestClass3 {
     }
 
     public static Set<TypeRepresentation> expectedTypeRepresentations() {
-        final Map<String, TypeIdentifier> properties = new HashMap<>();
+        final Map<String, TypeDefinition> properties = new HashMap<>();
 
         final TypeIdentifier innerClassIdentifier = TypeIdentifier.ofType("Lcom/sebastian_daschner/jaxrs_analyzer/analysis/results/testclasses/typeanalyzer/TestClass3$InnerClass;");
         final TypeIdentifier typeIdentifier = TypeIdentifier.ofType("Lcom/sebastian_daschner/jaxrs_analyzer/analysis/results/testclasses/typeanalyzer/TestClass3$Type;");
         final TypeIdentifier anotherInnerIdentifier = TypeIdentifier.ofType("Lcom/sebastian_daschner/jaxrs_analyzer/analysis/results/testclasses/typeanalyzer/TestClass3$AnotherInner;");
 
-        properties.put("first", innerClassIdentifier);
-        properties.put("second", typeIdentifier);
-        properties.put("third", anotherInnerIdentifier);
+        properties.put("first", TypeDefinition.of(innerClassIdentifier));
+        properties.put("second", TypeDefinition.of(typeIdentifier));
+        properties.put("third", TypeDefinition.of(anotherInnerIdentifier));
 
         final TypeRepresentation testClass3 = TypeRepresentation.ofConcrete(expectedIdentifier(), properties);
-        final TypeRepresentation innerClass = TypeRepresentation.ofConcrete(innerClassIdentifier, Collections.singletonMap("name", TypeUtils.STRING_IDENTIFIER));
+        final TypeRepresentation innerClass = TypeRepresentation.ofConcrete(innerClassIdentifier, Collections.singletonMap("name", TypeDefinition.of(TypeUtils.STRING_IDENTIFIER)));
         final TypeRepresentation anotherInner = TypeRepresentation.ofConcrete(anotherInnerIdentifier);
-        final TypeRepresentation type = TypeRepresentation.ofEnum(typeIdentifier, "ONE", "TWO", "THREE");
+        final TypeRepresentation type = TypeRepresentation.ofEnum(TypeDefinition.of(typeIdentifier), "ONE", "TWO", "THREE");
 
         return new HashSet<>(Arrays.asList(testClass3, innerClass, anotherInner, type));
     }

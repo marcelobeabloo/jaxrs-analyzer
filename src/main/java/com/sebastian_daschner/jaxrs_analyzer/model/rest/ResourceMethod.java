@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.sebastian_daschner.jaxrs_analyzer.model.rest;
 
 import com.sebastian_daschner.jaxrs_analyzer.utils.StringUtils;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,11 +31,13 @@ public class ResourceMethod {
     private final Set<String> responseMediaTypes = new HashSet<>();
     private final Map<Integer, Response> responses = new HashMap<>();
     private final Set<MethodParameter> methodParameters = new HashSet<>();
+    private String operation;
     private String description;
 
     private HttpMethod method;
     private TypeIdentifier requestBody;
     private String requestBodyDescription;
+    private Map<String, String> requestBodyDoc = new HashMap<>();
     private boolean deprecated;
 
     public ResourceMethod() {
@@ -85,6 +85,14 @@ public class ResourceMethod {
         this.deprecated = deprecated;
     }
 
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -95,6 +103,14 @@ public class ResourceMethod {
 
     public void setRequestBodyDescription(final String requestBodyDescription) {
         this.requestBodyDescription = requestBodyDescription;
+    }
+
+    public Map<String, String> getRequestBodyDoc() {
+        return requestBodyDoc;
+    }
+
+    public void setRequestBodyDoc(Map<String, String> requestBodyDoc) {
+        this.requestBodyDoc = requestBodyDoc;
     }
 
     public ResourceMethod combine(ResourceMethod with) {
@@ -114,12 +130,15 @@ public class ResourceMethod {
         rm.methodParameters.addAll(this.methodParameters);
         rm.methodParameters.addAll(with.methodParameters);
 
+        rm.operation = StringUtils.isBlank(this.operation) ? with.operation : this.operation;
+
         String combinedDescription = Stream.of(this.description, with.description)
                 .filter(s -> !StringUtils.isBlank(s))
                 .collect(Collectors.joining("\n"));
         rm.description = StringUtils.isBlank(combinedDescription) ? null : combinedDescription;
 
         rm.requestBodyDescription = mergeRequestBodyDescription(with);
+        rm.requestBodyDoc = with.requestBodyDoc;
 
         rm.deprecated = Stream.of(this.deprecated, with.deprecated).anyMatch(Boolean.TRUE::equals);
         return rm;
@@ -128,31 +147,52 @@ public class ResourceMethod {
     private String mergeRequestBodyDescription(ResourceMethod other) {
         final boolean thisNull = requestBodyDescription == null;
         final boolean otherNull = other.requestBodyDescription == null;
-        if (thisNull && otherNull)
+        if (thisNull && otherNull) {
             return null;
+        }
 
-        if (thisNull ^ otherNull)
+        if (thisNull ^ otherNull) {
             return thisNull ? other.requestBodyDescription : requestBodyDescription;
+        }
 
         return requestBodyDescription + "\n" + other.requestBodyDescription;
     }
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         final ResourceMethod that = (ResourceMethod) o;
 
-        if (!requestMediaTypes.equals(that.requestMediaTypes)) return false;
-        if (!responseMediaTypes.equals(that.responseMediaTypes)) return false;
-        if (!responses.equals(that.responses)) return false;
-        if (!methodParameters.equals(that.methodParameters)) return false;
-        if (method != that.method) return false;
-        if (deprecated != that.deprecated) return false;
-        if (description != null ? !description.equals(that.description) : that.description != null) return false;
-        if (requestBodyDescription != null ? !requestBodyDescription.equals(that.requestBodyDescription) : that.requestBodyDescription != null)
+        if (!requestMediaTypes.equals(that.requestMediaTypes)) {
             return false;
+        }
+        if (!responseMediaTypes.equals(that.responseMediaTypes)) {
+            return false;
+        }
+        if (!responses.equals(that.responses)) {
+            return false;
+        }
+        if (!methodParameters.equals(that.methodParameters)) {
+            return false;
+        }
+        if (method != that.method) {
+            return false;
+        }
+        if (deprecated != that.deprecated) {
+            return false;
+        }
+        if (description != null ? !description.equals(that.description) : that.description != null) {
+            return false;
+        }
+        if (requestBodyDescription != null ? !requestBodyDescription.equals(that.requestBodyDescription) : that.requestBodyDescription != null) {
+            return false;
+        }
         return requestBody != null ? requestBody.equals(that.requestBody) : that.requestBody == null;
     }
 
@@ -172,16 +212,17 @@ public class ResourceMethod {
 
     @Override
     public String toString() {
-        return "ResourceMethod{" +
-                "method=" + method +
-                ", requestMediaTypes=" + requestMediaTypes +
-                ", responseMediaTypes=" + responseMediaTypes +
-                ", responses=" + responses +
-                ", methodParameters=" + methodParameters +
-                ", description=" + description +
-                ", requestBodyDescription=" + requestBodyDescription +
-                ", requestBody=" + requestBody +
-                '}';
+        return "ResourceMethod{"
+                + "method=" + method
+                + ", requestMediaTypes=" + requestMediaTypes
+                + ", responseMediaTypes=" + responseMediaTypes
+                + ", responses=" + responses
+                + ", methodParameters=" + methodParameters
+                + ", operation=" + operation
+                + ", description=" + description
+                + ", requestBodyDescription=" + requestBodyDescription
+                + ", requestBody=" + requestBody
+                + '}';
     }
 
 }

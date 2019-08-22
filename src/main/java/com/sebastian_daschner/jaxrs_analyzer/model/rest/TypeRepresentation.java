@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.sebastian_daschner.jaxrs_analyzer.model.rest;
 
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
-
 import java.util.*;
 
 /**
- * Represents a request/response body type including the properties which actually will be serialized (e.g. depending on the JAXB mapping).
- * Enables the {@link TypeRepresentationVisitor}s to access the recursive model.
+ * Represents a request/response body type including the properties which
+ * actually will be serialized (e.g. depending on the JAXB mapping). Enables the
+ * {@link TypeRepresentationVisitor}s to access the recursive model.
  *
  * @author Sebastian Daschner
  */
@@ -41,7 +40,8 @@ public abstract class TypeRepresentation {
     }
 
     /**
-     * Returns the component type which is either the actual type identifier or the contained type for a collection type.
+     * Returns the component type which is either the actual type identifier or
+     * the contained type for a collection type.
      *
      * @return The component type
      */
@@ -49,8 +49,12 @@ public abstract class TypeRepresentation {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TypeRepresentation that = (TypeRepresentation) o;
         return identifier.equals(that.identifier);
@@ -62,8 +66,10 @@ public abstract class TypeRepresentation {
     }
 
     /**
-     * Creates a type representation of a concrete type (i.e. a Java type, not a programmatically created type) without actual properties.
-     * This is used for JDK internal types (like {@link String}, {@link Object}) where no property analysis is desired.
+     * Creates a type representation of a concrete type (i.e. a Java type, not a
+     * programmatically created type) without actual properties. This is used
+     * for JDK internal types (like {@link String}, {@link Object}) where no
+     * property analysis is desired.
      *
      * @param identifier The type identifier
      * @return The type representation
@@ -73,22 +79,26 @@ public abstract class TypeRepresentation {
     }
 
     /**
-     * Creates a type representation of a concrete type (i.e. a Java type, not a programmatically created type) plus the actual properties.
+     * Creates a type representation of a concrete type (i.e. a Java type, not a
+     * programmatically created type) plus the actual properties.
      *
      * @param identifier The type identifier
      * @param properties The type (POJO) description
      * @return The type representation
      */
-    public static TypeRepresentation ofConcrete(final TypeIdentifier identifier, final Map<String, TypeIdentifier> properties) {
+    public static TypeRepresentation ofConcrete(final TypeIdentifier identifier, final Map<String, TypeDefinition> properties) {
         return new ConcreteTypeRepresentation(identifier, properties);
     }
 
     /**
-     * Creates a type representation of a collection type (i.e. anything assignable to {@link java.util.Collection} or an array) which contains an actual representation.
+     * Creates a type representation of a collection type (i.e. anything
+     * assignable to {@link java.util.Collection} or an array) which contains an
+     * actual representation.
      * <p>
-     * Example: {@code identifier: java.util.List<java.lang.String>, typeRepresentation: java.lang.String}
+     * Example:
+     * {@code identifier: java.util.List<java.lang.String>, typeRepresentation: java.lang.String}
      *
-     * @param identifier         The type identifier of the collection type
+     * @param identifier The type identifier of the collection type
      * @param typeRepresentation The contained type representation
      * @return The type representation
      */
@@ -97,26 +107,27 @@ public abstract class TypeRepresentation {
     }
 
     /**
-     * Creates a type representation of an enum type plus the available enumeration values.
+     * Creates a type representation of an enum type plus the available
+     * enumeration values.
      *
-     * @param identifier The type identifier
+     * @param definition
      * @param enumValues The enum values
      * @return The type representation
      */
-    public static TypeRepresentation ofEnum(final TypeIdentifier identifier, final String... enumValues) {
-        return new EnumTypeRepresentation(identifier, new HashSet<>(Arrays.asList(enumValues)));
+    public static TypeRepresentation ofEnum(final TypeDefinition definition, final String... enumValues) {
+        return new EnumTypeRepresentation(definition, new HashSet<>(Arrays.asList(enumValues)));
     }
 
     public static class ConcreteTypeRepresentation extends TypeRepresentation {
 
-        private final Map<String, TypeIdentifier> properties;
+        private final Map<String, TypeDefinition> properties;
 
-        private ConcreteTypeRepresentation(final TypeIdentifier identifier, final Map<String, TypeIdentifier> properties) {
+        private ConcreteTypeRepresentation(final TypeIdentifier identifier, final Map<String, TypeDefinition> properties) {
             super(identifier);
             this.properties = properties;
         }
 
-        public Map<String, TypeIdentifier> getProperties() {
+        public Map<String, TypeDefinition> getProperties() {
             return properties;
         }
 
@@ -131,21 +142,22 @@ public abstract class TypeRepresentation {
         }
 
         /**
-         * Checks if the properties of this representation matches the given properties.
+         * Checks if the properties of this representation matches the given
+         * properties.
          *
          * @param properties The other properties to check
          * @return {@code true} if the content equals
          */
-        public boolean contentEquals(final Map<String, TypeIdentifier> properties) {
+        public boolean contentEquals(final Map<String, TypeDefinition> properties) {
             return this.properties.equals(properties);
         }
 
         @Override
         public String toString() {
-            return "ConcreteTypeRepresentation{" +
-                    "identifier=" + getIdentifier() +
-                    ",properties=" + properties +
-                    '}';
+            return "ConcreteTypeRepresentation{"
+                    + "identifier=" + getIdentifier()
+                    + ",properties=" + properties
+                    + '}';
         }
     }
 
@@ -175,8 +187,10 @@ public abstract class TypeRepresentation {
         }
 
         /**
-         * Checks if the nested type of this collection representation matches the given type (i.e. the same property bindings for concrete types
-         * or the same contained representation for collection types). This does not check the actual type (identifier).
+         * Checks if the nested type of this collection representation matches
+         * the given type (i.e. the same property bindings for concrete types or
+         * the same contained representation for collection types). This does
+         * not check the actual type (identifier).
          *
          * @param representation The other nested representation to check
          * @return {@code true} if the content equals
@@ -185,43 +199,53 @@ public abstract class TypeRepresentation {
             final boolean thisStaticType = !this.representation.getIdentifier().getType().equals(Types.JSON);
             final boolean otherStaticType = !representation.getIdentifier().getType().equals(Types.JSON);
 
-            if (thisStaticType ^ otherStaticType)
+            if (thisStaticType ^ otherStaticType) {
                 return false;
+            }
 
-            if (thisStaticType)
+            if (thisStaticType) {
                 return this.representation.getIdentifier().equals(representation.getIdentifier());
+            }
 
             final boolean thisCollection = this.representation instanceof CollectionTypeRepresentation;
             final boolean thatCollection = representation instanceof CollectionTypeRepresentation;
-            if (thisCollection ^ thatCollection)
+            if (thisCollection ^ thatCollection) {
                 return false;
+            }
 
-            if (thisCollection)
+            if (thisCollection) {
                 return ((CollectionTypeRepresentation) this.representation).contentEquals(((CollectionTypeRepresentation) representation).getRepresentation());
+            }
 
             return ((ConcreteTypeRepresentation) this.representation).contentEquals(((ConcreteTypeRepresentation) representation).getProperties());
         }
 
         @Override
         public String toString() {
-            return "CollectionTypeRepresentation{" +
-                    "identifier=" + getIdentifier() +
-                    ",representation=" + representation +
-                    '}';
+            return "CollectionTypeRepresentation{"
+                    + "identifier=" + getIdentifier()
+                    + ",representation=" + representation
+                    + '}';
         }
     }
 
     public static class EnumTypeRepresentation extends TypeRepresentation {
 
         private final Set<String> enumValues;
+        private final TypeDefinition definition;
 
-        private EnumTypeRepresentation(final TypeIdentifier identifier, final Set<String> enumValues) {
-            super(identifier);
+        private EnumTypeRepresentation(final TypeDefinition definition, final Set<String> enumValues) {
+            super(definition.getTypeIdentifier());
             this.enumValues = enumValues;
+            this.definition = definition;
         }
 
         public Set<String> getEnumValues() {
             return enumValues;
+        }
+
+        public TypeDefinition getDefinition() {
+            return definition;
         }
 
         @Override
@@ -236,9 +260,9 @@ public abstract class TypeRepresentation {
 
         @Override
         public String toString() {
-            return "EnumTypeRepresentation{" +
-                    "enumValues=" + enumValues +
-                    '}';
+            return "EnumTypeRepresentation{"
+                    + "enumValues=" + enumValues
+                    + '}';
         }
     }
 

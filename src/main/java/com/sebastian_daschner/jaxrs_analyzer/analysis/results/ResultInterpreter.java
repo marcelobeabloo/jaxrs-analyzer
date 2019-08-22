@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.JavaDocParameterResolver.*;
 import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.elements.HttpResponse;
 import com.sebastian_daschner.jaxrs_analyzer.model.javadoc.ClassComment;
@@ -28,11 +28,10 @@ import com.sebastian_daschner.jaxrs_analyzer.model.rest.Resources;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.Response;
 import com.sebastian_daschner.jaxrs_analyzer.model.results.ClassResult;
 import com.sebastian_daschner.jaxrs_analyzer.model.results.MethodResult;
-
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.JavaDocParameterResolver.*;
 
 /**
  * Interprets the analyzed project results to REST results.
@@ -78,7 +77,7 @@ public class ResultInterpreter {
      * Interprets the method result.
      *
      * @param methodResult The method result
-     * @param classResult  The result of the containing class
+     * @param classResult The result of the containing class
      */
     private void interpretMethodResult(final MethodResult methodResult, final ClassResult classResult) {
         if (methodResult.getSubResource() != null) {
@@ -98,7 +97,7 @@ public class ResultInterpreter {
      * Interprets the result of a resource method.
      *
      * @param methodResult The method result
-     * @param classResult  The result of the containing class
+     * @param classResult The result of the containing class
      * @return The resource method which this method represents
      */
     private ResourceMethod interpretResourceMethod(final MethodResult methodResult, final ClassResult classResult) {
@@ -112,34 +111,39 @@ public class ResultInterpreter {
         addParameterDescriptions(resourceMethod.getMethodParameters(), methodDoc);
         stringParameterResolver.replaceParametersTypes(resourceMethod.getMethodParameters());
 
+        resourceMethod.setOperation(findMethodOperationDoc(methodDoc));
+
         if (methodResult.getRequestBodyType() != null) {
-            resourceMethod.setRequestBody(javaTypeAnalyzer.analyze(methodResult.getRequestBodyType()));
+            resourceMethod.setRequestBody(javaTypeAnalyzer.analyze(methodResult.getRequestBodyType(), methodResult.getRequestBodyDoc()));
             resourceMethod.setRequestBodyDescription(findRequestBodyDescription(methodDoc));
         }
 
         // add default status code due to JSR 339
         addDefaultResponses(methodResult);
 
-        methodResult.getResponses().forEach(r -> interpretResponse(r, resourceMethod));
+        methodResult.getResponses().forEach(r -> interpretResponse(r, resourceMethod, methodResult.getResponseBodyDoc()));
 
         addResponseComments(methodResult, resourceMethod);
 
         addMediaTypes(methodResult, classResult, resourceMethod);
 
-        if (methodResult.isDeprecated() || classResult.isDeprecated() || hasDeprecationTag(methodDoc))
+        if (methodResult.isDeprecated() || classResult.isDeprecated() || hasDeprecationTag(methodDoc)) {
             resourceMethod.setDeprecated(true);
+        }
 
         return resourceMethod;
     }
 
     /**
-     * Adds the comments for the individual status code to the corresponding Responses.
-     * The information is based on the {@code @response} javadoc tags.
+     * Adds the comments for the individual status code to the corresponding
+     * Responses. The information is based on the {@code @response} javadoc
+     * tags.
      */
     private void addResponseComments(MethodResult methodResult, ResourceMethod resourceMethod) {
         MethodComment methodDoc = methodResult.getMethodDoc();
-        if (methodDoc == null)
+        if (methodDoc == null) {
             return;
+        }
 
         methodDoc.getResponseComments()
                 .forEach((k, v) -> addResponseComment(k, v, resourceMethod));
@@ -147,25 +151,25 @@ public class ResultInterpreter {
         ClassComment classDoc = methodDoc.getContainingClassComment();
 
         // class-level response comments are added last (if absent) to keep hierarchy
-        if (classDoc != null)
+        if (classDoc != null) {
             classDoc.getResponseComments()
                     .forEach((k, v) -> addResponseComment(k, v, resourceMethod));
+        }
     }
 
     private void addResponseComment(Integer status, String comment, ResourceMethod resourceMethod) {
-
         if (resourceMethod.getResponses().get(status) != null) {
-            resourceMethod.getResponses().put(status,
-                                            new Response(resourceMethod.getResponses().get(status).getResponseBody(), comment));
+            Response response = resourceMethod.getResponses().get(status);
+            resourceMethod.getResponses().put(status, new Response(response.getResponseBody(), comment, response.getResponseBodyDoc()));
         } else {
-            resourceMethod.getResponses().put(status, new Response(null, comment));
+            resourceMethod.getResponses().put(status, new Response(null, comment, null));
         }
-
     }
 
     private boolean hasDeprecationTag(MethodComment doc) {
-        if (doc == null)
+        if (doc == null) {
             return false;
+        }
         return doc.isDeprecated() || hasClassDeprecationTag(doc.getContainingClassComment());
     }
 
@@ -174,29 +178,38 @@ public class ResultInterpreter {
     }
 
     private void addParameterDescriptions(final Set<MethodParameter> methodParameters, final MethodComment methodDoc) {
-        if (methodDoc == null)
+        if (methodDoc == null) {
             return;
+        }
 
         methodParameters.forEach(p -> {
             final Optional<MemberParameterTag> tag = findParameterDoc(p, methodDoc);
 
             final String description = tag.map(MemberParameterTag::getComment)
                     .orElseGet(() -> findFieldDoc(p, methodDoc.getContainingClassComment())
-                            .map(MemberParameterTag::getComment).orElse(null));
+                    .map(MemberParameterTag::getComment).orElse(null));
 
             p.setDescription(description);
         });
     }
 
     private String findRequestBodyDescription(final MethodComment methodDoc) {
-        if (methodDoc == null)
+        if (methodDoc == null) {
             return null;
+        }
         return findRequestBodyDoc(methodDoc).map(MemberParameterTag::getComment).orElse(null);
     }
 
+    private String findMethodOperationDoc(final MethodComment methodDoc) {
+        if (methodDoc == null) {
+            return null;
+        }
+        return methodDoc.getOperation();
+    }
+
     /**
-     * Updates {@code parameters} to contain the {@code additional} parameters as well.
-     * Preexisting parameters with identical names are overridden.
+     * Updates {@code parameters} to contain the {@code additional} parameters
+     * as well. Preexisting parameters with identical names are overridden.
      */
     private void updateMethodParameters(final Set<MethodParameter> parameters, final Set<MethodParameter> additional) {
         additional.forEach(a -> {
@@ -219,7 +232,7 @@ public class ResultInterpreter {
                 .forEach(r -> r.getStatuses().add(javax.ws.rs.core.Response.Status.OK.getStatusCode()));
     }
 
-    private void interpretResponse(final HttpResponse httpResponse, final ResourceMethod method) {
+    private void interpretResponse(final HttpResponse httpResponse, final ResourceMethod method, final Map<String, String> responseBodyDoc) {
         method.getResponseMediaTypes().addAll(httpResponse.getContentTypes());
         httpResponse.getStatuses().forEach(s -> {
             Response response = httpResponse.getInlineEntities().stream().findAny()
@@ -227,8 +240,9 @@ public class ResultInterpreter {
 
             if (response == null) {
                 // no inline entities -> potential class type will be considered
-                response = httpResponse.getEntityTypes().isEmpty() ? new Response() :
-                        new Response(javaTypeAnalyzer.analyze(JavaUtils.determineMostSpecificType(httpResponse.getEntityTypes().toArray(new String[0]))));
+                Map<String, String> javadoc = (s == 200) ? responseBodyDoc : Collections.emptyMap();
+                response = httpResponse.getEntityTypes().isEmpty() ? new Response()
+                        : new Response(javaTypeAnalyzer.analyze(JavaUtils.determineMostSpecificType(httpResponse.getEntityTypes().toArray(new String[0])), javadoc));
             }
 
             response.getHeaders().addAll(httpResponse.getHeaders());
@@ -238,10 +252,11 @@ public class ResultInterpreter {
     }
 
     /**
-     * Adds the request and response media type information to the resource method.
+     * Adds the request and response media type information to the resource
+     * method.
      *
-     * @param methodResult   The method result
-     * @param classResult    The class result
+     * @param methodResult The method result
+     * @param classResult The class result
      * @param resourceMethod The resource method
      */
     private void addMediaTypes(final MethodResult methodResult, final ClassResult classResult, final ResourceMethod resourceMethod) {
@@ -252,8 +267,9 @@ public class ResultInterpreter {
         }
 
         // response media types -> use annotations if not yet present
-        if (resourceMethod.getResponseMediaTypes().isEmpty())
+        if (resourceMethod.getResponseMediaTypes().isEmpty()) {
             resourceMethod.getResponseMediaTypes().addAll(methodResult.getResponseMediaTypes());
+        }
         // -> inherit
         if (resourceMethod.getResponseMediaTypes().isEmpty()) {
             resourceMethod.getResponseMediaTypes().addAll(classResult.getResponseMediaTypes());

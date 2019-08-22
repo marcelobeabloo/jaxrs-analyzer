@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.sebastian_daschner.jaxrs_analyzer.model;
 
 import com.sebastian_daschner.jaxrs_analyzer.LogProvider;
 import com.sebastian_daschner.jaxrs_analyzer.analysis.classes.ContextClassReader;
+import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
 import com.sebastian_daschner.jaxrs_analyzer.utils.StringUtils;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.signature.SignatureReader;
-import org.objectweb.asm.util.TraceSignatureVisitor;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.sebastian_daschner.jaxrs_analyzer.model.Types.*;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.signature.SignatureReader;
+import org.objectweb.asm.util.TraceSignatureVisitor;
 
 /**
  * Contains Java reflection utility functionality.
@@ -60,9 +57,11 @@ public final class JavaUtils {
     }
 
     /**
-     * Returns the annotation or {@code null} if the element is not annotated with that type.
-     * <b>Note:</b> This step is necessary due to issues with external class loaders (e.g. Maven).
-     * The classes may not be identical and are therefore compared by FQ class name.
+     * Returns the annotation or {@code null} if the element is not annotated
+     * with that type.
+     * <b>Note:</b> This step is necessary due to issues with external class
+     * loaders (e.g. Maven). The classes may not be identical and are therefore
+     * compared by FQ class name.
      */
     public static <A extends Annotation> A getAnnotation(final AnnotatedElement annotatedElement, final Class<A> annotationClass) {
         final Optional<Annotation> annotation = Stream.of(annotatedElement.getAnnotations())
@@ -73,16 +72,19 @@ public final class JavaUtils {
 
     /**
      * Checks if the annotation is present on the annotated element.
-     * <b>Note:</b> This step is necessary due to issues with external class loaders (e.g. Maven).
-     * The classes may not be identical and are therefore compared by FQ class name.
+     * <b>Note:</b> This step is necessary due to issues with external class
+     * loaders (e.g. Maven). The classes may not be identical and are therefore
+     * compared by FQ class name.
      */
     public static boolean isAnnotationPresent(final AnnotatedElement annotatedElement, final Class<?> annotationClass) {
         return Stream.of(annotatedElement.getAnnotations()).map(Annotation::annotationType).map(Class::getName).anyMatch(n -> n.equals(annotationClass.getName()));
     }
 
     /**
-     * Determines the type which is most "specific" (i. e. parametrized types are more "specific" than generic types,
-     * types which are not {@link Object} are less specific). If no exact statement can be made, the first type is chosen.
+     * Determines the type which is most "specific" (i. e. parametrized types
+     * are more "specific" than generic types, types which are not
+     * {@link Object} are less specific). If no exact statement can be made, the
+     * first type is chosen.
      *
      * @param types The types
      * @return The most "specific" type
@@ -109,8 +111,9 @@ public final class JavaUtils {
             return firstType;
         }
 
-        if (OBJECT.equals(firstType))
+        if (OBJECT.equals(firstType)) {
             return secondType;
+        }
 
         final List<String> firstTypeParameters = getTypeParameters(firstType);
         final List<String> secondTypeParameters = getTypeParameters(secondType);
@@ -126,19 +129,23 @@ public final class JavaUtils {
                 return secondType;
             }
 
-            if (firstTypeParameters.size() != secondTypeParameters.size())
-                // types parameters are not compatible, no statement can be made
+            if (firstTypeParameters.size() != secondTypeParameters.size()) // types parameters are not compatible, no statement can be made
+            {
                 return firstType;
+            }
 
             for (int i = 0; i < firstTypeParameters.size(); i++) {
                 final String firstInner = firstTypeParameters.get(i);
                 final String secondInner = secondTypeParameters.get(i);
 
-                if (firstInner.equals(secondInner)) continue;
+                if (firstInner.equals(secondInner)) {
+                    continue;
+                }
 
                 // desired to test against identity, i.e. which object was taken by comparison
-                if (firstInner == determineMostSpecific(firstInner, secondInner))
+                if (firstInner == determineMostSpecific(firstInner, secondInner)) {
                     return firstType;
+                }
                 return secondType;
             }
         }
@@ -157,15 +164,21 @@ public final class JavaUtils {
         }
 
         // check if one type is inherited from other
-        if (isAssignableTo(firstType, secondType)) return firstType;
-        if (isAssignableTo(secondType, firstType)) return secondType;
+        if (isAssignableTo(firstType, secondType)) {
+            return firstType;
+        }
+        if (isAssignableTo(secondType, firstType)) {
+            return secondType;
+        }
 
         return firstType;
     }
 
     /**
-     * Determines the type which is least "specific" (i. e. parametrized types are more "specific" than generic types,
-     * types which are not {@link Object} are less specific). If no exact statement can be made, the second type is chosen.
+     * Determines the type which is least "specific" (i. e. parametrized types
+     * are more "specific" than generic types, types which are not
+     * {@link Object} are less specific). If no exact statement can be made, the
+     * second type is chosen.
      *
      * @param types The types
      * @return The most "specific" type
@@ -191,17 +204,20 @@ public final class JavaUtils {
     private static String determineLeastSpecific(final String firstType, final String secondType) {
         final String mostSpecificType = determineMostSpecificType(firstType, secondType);
         // has to compare identity to see which String object was taken
-        if (mostSpecificType == firstType)
+        if (mostSpecificType == firstType) {
             return secondType;
+        }
         return firstType;
     }
 
     /**
-     * Checks if the left type is assignable to the right type, i.e. the right type is of the same or a sub-type.
+     * Checks if the left type is assignable to the right type, i.e. the right
+     * type is of the same or a sub-type.
      */
     public static boolean isAssignableTo(final String leftType, final String rightType) {
-        if (leftType.equals(rightType))
+        if (leftType.equals(rightType)) {
             return true;
+        }
 
         final boolean firstTypeArray = leftType.charAt(0) == '[';
         if (firstTypeArray ^ rightType.charAt(0) == '[') {
@@ -210,8 +226,9 @@ public final class JavaUtils {
 
         final Class<?> leftClass = loadClassFromType(leftType);
         final Class<?> rightClass = loadClassFromType(rightType);
-        if (leftClass == null || rightClass == null)
+        if (leftClass == null || rightClass == null) {
             return false;
+        }
 
         final boolean bothTypesParameterized = hasTypeParameters(leftType) && hasTypeParameters(rightType);
         return rightClass.isAssignableFrom(leftClass) && (firstTypeArray || !bothTypesParameterized || getTypeParameters(leftType).equals(getTypeParameters(rightType)));
@@ -222,11 +239,13 @@ public final class JavaUtils {
     }
 
     /**
-     * Converts the given JVM object type signature to a class name. Erasures parametrized types.
+     * Converts the given JVM object type signature to a class name. Erasures
+     * parametrized types.
      * <p>
      * Example: {@code Ljava/util/List<Ljava/lang/String;>; -> java/util/List}
      *
-     * @throws IllegalArgumentException If the type is not a reference or array type.
+     * @throws IllegalArgumentException If the type is not a reference or array
+     * type.
      */
     public static String toClassName(final String type) {
         switch (type.charAt(0)) {
@@ -276,7 +295,8 @@ public final class JavaUtils {
     /**
      * Converts the given type signature to a human readable type string.
      * <p>
-     * Example: {@code Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>; -> java.util.Map<java.lang.String, java.lang.String>}
+     * Example:
+     * {@code Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>; -> java.util.Map<java.lang.String, java.lang.String>}
      */
     public static String toReadableType(final String type) {
         final SignatureReader reader = new SignatureReader(type);
@@ -286,8 +306,8 @@ public final class JavaUtils {
 
         if (StringUtils.isBlank(System.getProperty("fullPackage"))) {
             //return single type
-            if(declaration.indexOf(".") != declaration.lastIndexOf(".")) {
-                declaration = declaration.substring(declaration.lastIndexOf(".") + 1 , declaration.length());
+            if (declaration.indexOf(".") != declaration.lastIndexOf(".")) {
+                declaration = declaration.substring(declaration.lastIndexOf(".") + 1, declaration.length());
             }
         }
 
@@ -303,11 +323,13 @@ public final class JavaUtils {
     }
 
     /**
-     * Returns the type parameters of the given type. Will be an empty list if the type is not parametrized.
+     * Returns the type parameters of the given type. Will be an empty list if
+     * the type is not parametrized.
      */
     public static List<String> getTypeParameters(final String type) {
-        if (type.charAt(0) != 'L')
+        if (type.charAt(0) != 'L') {
             return emptyList();
+        }
 
         int lastStart = type.indexOf('<') + 1;
         final List<String> parameters = new ArrayList<>();
@@ -316,11 +338,11 @@ public final class JavaUtils {
             int depth = 0;
             for (int i = lastStart; i < type.length() - 2; i++) {
                 final char c = type.charAt(i);
-                if (c == '<')
+                if (c == '<') {
                     depth++;
-                else if (c == '>')
+                } else if (c == '>') {
                     depth--;
-                else if (c == ';' && depth == 0) {
+                } else if (c == ';' && depth == 0) {
                     parameters.add(type.substring(lastStart, i + 1));
                     lastStart = i + 1;
                 }
@@ -330,7 +352,8 @@ public final class JavaUtils {
     }
 
     /**
-     * Returns the return type of the given method signature. Parametrized types are supported.
+     * Returns the return type of the given method signature. Parametrized types
+     * are supported.
      */
     public static String getReturnType(final String methodSignature) {
         return getReturnType(methodSignature, null);
@@ -342,8 +365,9 @@ public final class JavaUtils {
     }
 
     private static Map<String, String> getTypeVariables(final String type) {
-        if (type == null)
+        if (type == null) {
             return emptyMap();
+        }
         final Map<String, String> variables = new HashMap<>();
         final List<String> actualTypeParameters = getTypeParameters(type);
         final Class<?> loadedClass = loadClassFromType(type);
@@ -382,7 +406,6 @@ public final class JavaUtils {
         }
 
         // TODO test for variable types
-
         try {
             return ContextClassReader.getClassLoader().loadClass(className.replace('/', '.'));
         } catch (ClassNotFoundException e) {
@@ -398,8 +421,9 @@ public final class JavaUtils {
 
     public static Method findMethod(final String className, final String methodName, final String signature) {
         final Class<?> loadedClass = loadClassFromName(className);
-        if (loadedClass == null)
+        if (loadedClass == null) {
             return null;
+        }
 
         return findMethod(loadedClass, methodName, signature);
     }
@@ -424,8 +448,9 @@ public final class JavaUtils {
             signatureField.setAccessible(true);
             final String signature = (String) signatureField.get(method);
 
-            if (signature != null)
+            if (signature != null) {
                 return signature;
+            }
             return Type.getMethodDescriptor(method);
         } catch (ReflectiveOperationException e) {
             LogProvider.error("Could not access method " + method);
@@ -475,14 +500,41 @@ public final class JavaUtils {
         return signature;
     }
 
+    public static Boolean isFieldRequired(final Field field) {
+        field.setAccessible(true);
+        for (Annotation annotation : field.getDeclaredAnnotations()) {
+            if (isRequired(annotation)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Boolean isMethodRequired(final Method method) {
+        method.setAccessible(true);
+        for (Annotation annotation : method.getDeclaredAnnotations()) {
+            if (isRequired(annotation)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isRequired(Annotation annotation) {
+        String fqn = annotation.toString();
+        return fqn.contains("NotNull") || fqn.contains("NotEmpty") || fqn.contains("NotBlank");
+    }
+
     /**
-     * Returns the parameter types of the given method signature. Parametrized types are supported.
+     * Returns the parameter types of the given method signature. Parametrized
+     * types are supported.
      */
     public static List<String> getParameters(final String methodDesc) {
 //        final String[] types = resolveMethodSignature(methodDesc);
 //        return IntStream.range(0, types.length).mapToObj(i -> types[i]).collect(Collectors.toList());
-        if (methodDesc == null)
+        if (methodDesc == null) {
             return emptyList();
+        }
 
         final char[] buffer = methodDesc.toCharArray();
         final List<String> args = new ArrayList<>();
@@ -500,18 +552,22 @@ public final class JavaUtils {
         final ListIterator<String> iterator = args.listIterator();
         while (iterator.hasNext()) {
             final String arg = iterator.next();
-            if (arg.charAt(0) == 'T')
+            if (arg.charAt(0) == 'T') {
                 iterator.set(OBJECT);
+            }
         }
 
         return args;
     }
 
     /**
-     * Resolves the given method signatures to an array of (self-contained) Java type descriptions.
+     * Resolves the given method signatures to an array of (self-contained) Java
+     * type descriptions.
      *
-     * @param methodDesc The method description signature (can contain type parameters and generics)
-     * @return The types as an array with the method parameter types first and the return type as index {@code array.length - 1}
+     * @param methodDesc The method description signature (can contain type
+     * parameters and generics)
+     * @return The types as an array with the method parameter types first and
+     * the return type as index {@code array.length - 1}
      */
     private static String[] resolveMethodSignature(final String methodDesc) {
 
@@ -520,7 +576,6 @@ public final class JavaUtils {
 //        if (methodDesc.charAt(0) == '<') {
 //            typeParameters = resolveTypeParameters(methodDesc);
 //        }
-
         return null;
     }
 
@@ -562,7 +617,7 @@ public final class JavaUtils {
                 }
                 return getNextType(buf, off, len);
             case 'L':
-                // TODO resolve type variables
+            // TODO resolve type variables
             case 'T':
                 return getNextType(buf, off, 0);
             default:
@@ -572,14 +627,16 @@ public final class JavaUtils {
 
     private static String getNextType(char[] buf, int off, int len) {
         int depth = 0;
-        if (buf[off + len] == 'L' || buf[off + len] == 'T')
+        if (buf[off + len] == 'L' || buf[off + len] == 'T') {
             while (buf[off + len] != ';' || depth != 0) {
-                if (buf[off + len] == '<')
+                if (buf[off + len] == '<') {
                     depth++;
-                else if (buf[off + len] == '>')
+                } else if (buf[off + len] == '>') {
                     depth--;
+                }
                 len++;
             }
+        }
         return new String(buf, off, len + 1);
     }
 }

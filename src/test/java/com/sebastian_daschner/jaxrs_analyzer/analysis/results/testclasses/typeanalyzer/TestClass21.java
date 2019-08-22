@@ -16,15 +16,14 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results.testclasses.typeanalyzer;
 
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
+import static java.util.Arrays.asList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import static java.util.Arrays.asList;
 
 public class TestClass21 {
 
@@ -39,12 +38,12 @@ public class TestClass21 {
     }
 
     public static Set<TypeRepresentation> expectedTypeRepresentations() {
-        final Map<String, TypeIdentifier> properties = new HashMap<>();
+        final Map<String, TypeDefinition> properties = new HashMap<>();
 
         final TypeIdentifier inner = TypeIdentifier.ofType("Lcom/sebastian_daschner/jaxrs_analyzer/analysis/results/testclasses/typeanalyzer/TestClass21$InnerTestClass21;");
-        properties.put("inner", inner);
+        properties.put("inner", TypeDefinition.of(inner));
 
-        return new HashSet<>(asList(TypeRepresentation.ofConcrete(expectedIdentifier(), properties), TypeRepresentation.ofEnum(inner, "FIRST", "SECOND")));
+        return new HashSet<>(asList(TypeRepresentation.ofConcrete(expectedIdentifier(), properties), TypeRepresentation.ofEnum(TypeDefinition.of(inner), "FIRST", "SECOND")));
     }
 
     public static TypeIdentifier expectedIdentifier() {

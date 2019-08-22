@@ -6,11 +6,13 @@ import java.util.Map;
 /**
  * The comment parameter to a method parameter tag or a class field.
  * <p>
- * All types are not necessarily valid Java types but the simple names of the types.
- * Doing a full JavaDoc type resolving with all imports adds too much complexity at this point.
- * This is a best-effort approach.
+ * All types are not necessarily valid Java types but the simple names of the
+ * types. Doing a full JavaDoc type resolving with all imports adds too much
+ * complexity at this point. This is a best-effort approach.
  */
 public class MemberParameterTag {
+
+    private final String name;
 
     private final String comment;
 
@@ -19,9 +21,14 @@ public class MemberParameterTag {
      */
     private final Map<String, String> annotations;
 
-    public MemberParameterTag(String comment, Map<String, String> annotations) {
+    public MemberParameterTag(String name, String comment, Map<String, String> annotations) {
+        this.name = name;
         this.comment = comment;
         this.annotations = Collections.unmodifiableMap(annotations);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getComment() {

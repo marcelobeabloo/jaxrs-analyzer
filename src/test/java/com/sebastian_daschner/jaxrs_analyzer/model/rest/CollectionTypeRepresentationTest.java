@@ -1,15 +1,13 @@
 package com.sebastian_daschner.jaxrs_analyzer.model.rest;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.*;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 public class CollectionTypeRepresentationTest {
 
@@ -20,23 +18,23 @@ public class CollectionTypeRepresentationTest {
 
         assertTrue(stringRepresentation.contentEquals(objectRepresentation.getProperties()));
 
-        final Map<String, TypeIdentifier> firstProperties = new HashMap<>();
-        firstProperties.put("hello", STRING_IDENTIFIER);
-        firstProperties.put("world", INT_IDENTIFIER);
+        final Map<String, TypeDefinition> firstProperties = new HashMap<>();
+        firstProperties.put("hello", TypeDefinition.of(STRING_IDENTIFIER));
+        firstProperties.put("world", TypeDefinition.of(INT_IDENTIFIER));
         final TypeRepresentation.ConcreteTypeRepresentation firstRepresentation = (TypeRepresentation.ConcreteTypeRepresentation) TypeRepresentation.ofConcrete(OBJECT_IDENTIFIER, firstProperties);
 
-        final Map<String, TypeIdentifier> secondProperties = new HashMap<>();
-        secondProperties.put("hello", STRING_IDENTIFIER);
-        secondProperties.put("world", INT_IDENTIFIER);
+        final Map<String, TypeDefinition> secondProperties = new HashMap<>();
+        secondProperties.put("hello", TypeDefinition.of(STRING_IDENTIFIER));
+        secondProperties.put("world", TypeDefinition.of(INT_IDENTIFIER));
 
         assertTrue(firstRepresentation.contentEquals(secondProperties));
     }
 
     @Test
     public void testContentEqualsCollection() {
-        final Map<String, TypeIdentifier> firstProperties = new HashMap<>();
-        firstProperties.put("hello", STRING_IDENTIFIER);
-        firstProperties.put("world", INT_IDENTIFIER);
+        final Map<String, TypeDefinition> firstProperties = new HashMap<>();
+        firstProperties.put("hello", TypeDefinition.of(STRING_IDENTIFIER));
+        firstProperties.put("world", TypeDefinition.of(INT_IDENTIFIER));
 
         final TypeRepresentation firstRepresentation = TypeRepresentation.ofConcrete(OBJECT_IDENTIFIER, firstProperties);
         final TypeRepresentation secondRepresentation = TypeRepresentation.ofConcrete(OBJECT_IDENTIFIER, Collections.emptyMap());

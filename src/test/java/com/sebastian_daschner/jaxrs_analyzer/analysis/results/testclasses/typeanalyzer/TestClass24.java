@@ -18,12 +18,12 @@ package com.sebastian_daschner.jaxrs_analyzer.analysis.results.testclasses.typea
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
+import java.util.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import java.util.*;
 
 /**
  * Test @JsonIgnoreType
@@ -41,9 +41,9 @@ public class TestClass24 {
     }
 
     public static Set<TypeRepresentation> expectedTypeRepresentations() {
-        final Map<String, TypeIdentifier> properties = new HashMap<>();
+        final Map<String, TypeDefinition> properties = new HashMap<>();
 
-        properties.put("first", TypeIdentifier.ofType(Types.PRIMITIVE_INT));
+        properties.put("first", TypeDefinition.of(TypeIdentifier.ofType(Types.PRIMITIVE_INT)));
 
         final TypeIdentifier testClass24Identifier = expectedIdentifier();
         final TypeRepresentation testClass24 = TypeRepresentation.ofConcrete(testClass24Identifier, properties);

@@ -51,4 +51,7 @@ public final class StringUtils {
         return string.chars().allMatch(Character::isWhitespace);
     }
 
+    public static String remove(String value, String fragmentToRemove) {
+        return value.replace(fragmentToRemove, "");
+    }
 }

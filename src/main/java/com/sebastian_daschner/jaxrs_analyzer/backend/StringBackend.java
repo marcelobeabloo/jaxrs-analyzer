@@ -1,12 +1,20 @@
 package com.sebastian_daschner.jaxrs_analyzer.backend;
 
+import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.toReadableType;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.Project;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.ResourceMethod;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.Resources;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentationVisitor;
-
+import java.io.StringReader;
+import java.io.StringWriter;
+import static java.util.Collections.singletonMap;
+import static java.util.Comparator.comparing;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Pattern;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -15,16 +23,6 @@ import javax.json.JsonValue;
 import javax.json.JsonWriter;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonGenerator;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Pattern;
-
-import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.toReadableType;
-import static java.util.Collections.singletonMap;
-import static java.util.Comparator.comparing;
 
 /**
  * A backend that is backed by Strings (plain text).
@@ -92,7 +90,7 @@ public abstract class StringBackend implements Backend {
 
     private void appendResource(final String resource) {
         resources.getMethods(resource).stream()
-                .sorted(comparing(ResourceMethod::getMethod))
+                .sorted(comparing(ResourceMethod::getOperation))
                 .forEach(resourceMethod -> {
                     appendMethod(resources.getBasePath(), resource, resourceMethod);
                     appendRequest(resourceMethod);
@@ -130,12 +128,12 @@ public abstract class StringBackend implements Backend {
         return output.getBytes();
     }
 
-    private String format(final String json) {
+    protected String format(final String json) {
         final JsonProvider provider = JsonProvider.provider();
         final StringWriter out = new StringWriter();
         try (final JsonReader reader = provider.createReader(new StringReader(json));
-             final JsonWriter jsonWriter = provider.createWriterFactory(singletonMap(JsonGenerator.PRETTY_PRINTING, true))
-                     .createWriter(out)) {
+                final JsonWriter jsonWriter = provider.createWriterFactory(singletonMap(JsonGenerator.PRETTY_PRINTING, true))
+                        .createWriter(out)) {
 
             // jsonWriter.write(reader.readValue()); // bug in RI, can switch to johnzon
             final JsonStructure read = reader.read();

@@ -17,14 +17,14 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results;
 
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Analyzes {@code JsonValue}s to derive the actual JSON representations.
@@ -88,8 +88,8 @@ class DynamicTypeAnalyzer {
     }
 
     private TypeIdentifier analyzeInternal(final JsonObject jsonObject) {
-        final HashMap<String, TypeIdentifier> properties = jsonObject.entrySet().stream()
-                .collect(HashMap::new, (m, v) -> m.put(v.getKey(), analyze(v.getValue())), Map::putAll);
+        final HashMap<String, TypeDefinition> properties = jsonObject.entrySet().stream()
+                .collect(HashMap::new, (m, v) -> m.put(v.getKey(), TypeDefinition.of(analyze(v.getValue()))), Map::putAll);
 
         final TypeIdentifier existing = findExistingType(properties);
         if (existing != null)
@@ -107,7 +107,7 @@ class DynamicTypeAnalyzer {
                 .map(Map.Entry::getKey).findAny().orElse(null);
     }
 
-    private TypeIdentifier findExistingType(final HashMap<String, TypeIdentifier> properties) {
+    private TypeIdentifier findExistingType(final HashMap<String, TypeDefinition> properties) {
         return typeRepresentations.entrySet().stream().filter(e -> e.getValue() instanceof TypeRepresentation.ConcreteTypeRepresentation)
                 .filter(e -> e.getKey().getType().equals(Types.JSON))
                 .filter(e -> ((TypeRepresentation.ConcreteTypeRepresentation) e.getValue()).contentEquals(properties))

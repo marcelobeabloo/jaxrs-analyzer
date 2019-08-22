@@ -6,9 +6,9 @@ package com.sebastian_daschner.jaxrs_analyzer.analysis.results.testclasses.typea
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,9 +30,9 @@ public class TestClass27 extends SuperTestClass27 {
     }
 
     public static Set<TypeRepresentation> expectedTypeRepresentations() {
-        final Map<String, TypeIdentifier> properties = new HashMap<>();
+        final Map<String, TypeDefinition> properties = new HashMap<>();
 
-        properties.put("foobar", TypeUtils.STRING_IDENTIFIER);
+        properties.put("foobar", TypeDefinition.of(TypeUtils.STRING_IDENTIFIER));
 
         return Collections.singleton(TypeRepresentation.ofConcrete(expectedIdentifier(), properties));
     }

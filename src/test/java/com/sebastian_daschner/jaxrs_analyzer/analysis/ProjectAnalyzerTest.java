@@ -21,24 +21,22 @@ import com.sebastian_daschner.jaxrs_analyzer.builder.ResourceMethodBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResponseBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ProjectAnalyzerTest {
 
@@ -141,22 +139,22 @@ public class ProjectAnalyzerTest {
             assertRepresentationEquals(message, ((TypeRepresentation.CollectionTypeRepresentation) expectedRepresentation).getRepresentation(),
                     ((TypeRepresentation.CollectionTypeRepresentation) actualRepresentation).getRepresentation(), expectedResources, actualResources);
         } else {
-            final Map<String, TypeIdentifier> expectedProperties = ((TypeRepresentation.ConcreteTypeRepresentation) expectedRepresentation).getProperties();
-            final Map<String, TypeIdentifier> actualProperties = ((TypeRepresentation.ConcreteTypeRepresentation) actualRepresentation).getProperties();
+            final Map<String, TypeDefinition> expectedProperties = ((TypeRepresentation.ConcreteTypeRepresentation) expectedRepresentation).getProperties();
+            final Map<String, TypeDefinition> actualProperties = ((TypeRepresentation.ConcreteTypeRepresentation) actualRepresentation).getProperties();
             assertEquals(message, expectedProperties.keySet(), actualProperties.keySet());
-            actualProperties.forEach((k, v) -> assertTypeIdentifierEquals(message, expectedProperties.get(k), v, expectedResources, actualResources));
+            actualProperties.forEach((k, v) -> assertTypeIdentifierEquals(message, expectedProperties.get(k).getTypeIdentifier(), v.getTypeIdentifier(), expectedResources, actualResources));
         }
     }
 
     private static Resources getResources() {
         final Resources resources = new Resources();
-        Map<String, TypeIdentifier> properties;
+        Map<String, TypeDefinition> properties;
 
         final TypeIdentifier stringIdentifier = TypeIdentifier.ofType(Types.STRING);
 
         properties = new HashMap<>();
-        properties.put("id", TypeIdentifier.ofType(Types.PRIMITIVE_LONG));
-        properties.put("name", stringIdentifier);
+        properties.put("id", TypeDefinition.of(TypeIdentifier.ofType(Types.PRIMITIVE_LONG)));
+        properties.put("name", TypeDefinition.of(stringIdentifier));
         final TypeIdentifier modelIdentifier = TypeIdentifier.ofType("Lcom/sebastian_daschner/jaxrs_test/Model;");
         final TypeRepresentation modelRepresentation = TypeRepresentation.ofConcrete(modelIdentifier, properties);
         resources.getTypeRepresentations().put(modelIdentifier, modelRepresentation);
@@ -289,15 +287,15 @@ public class ProjectAnalyzerTest {
         // json_tests
         final TypeIdentifier firstIdentifier = TypeIdentifier.ofDynamic();
         properties = new HashMap<>();
-        properties.put("key", stringIdentifier);
+        properties.put("key", TypeDefinition.of(stringIdentifier));
         // All numbers are treat as double (JSON type number)
-        properties.put("duke", TypeIdentifier.ofType(Types.DOUBLE));
+        properties.put("duke", TypeDefinition.of(TypeIdentifier.ofType(Types.DOUBLE)));
         resources.getTypeRepresentations().put(firstIdentifier, TypeRepresentation.ofConcrete(firstIdentifier, properties));
         ResourceMethod twelfthGet = ResourceMethodBuilder.withMethod(HttpMethod.GET).andResponse(200, ResponseBuilder.withResponseBody(firstIdentifier).build()).build();
 
         final TypeIdentifier secondIdentifier = TypeIdentifier.ofDynamic();
         properties = new HashMap<>();
-        properties.put("key", stringIdentifier);
+        properties.put("key", TypeDefinition.of(stringIdentifier));
         resources.getTypeRepresentations().put(secondIdentifier, TypeRepresentation.ofConcrete(secondIdentifier, properties));
 
         // TODO type should be Object because JsonArray is interpreted as collection type
@@ -313,9 +311,9 @@ public class ProjectAnalyzerTest {
         // json_tests/info
         final TypeIdentifier fourthIdentifier = TypeIdentifier.ofDynamic();
         properties = new HashMap<>();
-        properties.put("key", stringIdentifier);
-        properties.put("duke", stringIdentifier);
-        properties.put("hello", stringIdentifier);
+        properties.put("key", TypeDefinition.of(stringIdentifier));
+        properties.put("duke", TypeDefinition.of(stringIdentifier));
+        properties.put("hello", TypeDefinition.of(stringIdentifier));
         resources.getTypeRepresentations().put(fourthIdentifier, TypeRepresentation.ofConcrete(fourthIdentifier, properties));
         ResourceMethod thirteenthGet = ResourceMethodBuilder.withMethod(HttpMethod.GET).andResponse(200, ResponseBuilder.withResponseBody(fourthIdentifier).build())
                 .build();

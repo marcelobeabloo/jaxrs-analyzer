@@ -16,24 +16,22 @@
 
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.STRING_IDENTIFIER;
 import com.sebastian_daschner.jaxrs_analyzer.builder.*;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.javadoc.MethodComment;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 import com.sebastian_daschner.jaxrs_analyzer.model.results.ClassResult;
 import com.sebastian_daschner.jaxrs_analyzer.model.results.MethodResult;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.STRING_IDENTIFIER;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ResultInterpreterTest {
 
@@ -259,7 +257,7 @@ public class ResultInterpreterTest {
         expectedResult.setBasePath("path");
         final TypeIdentifier identifier = TypeIdentifier.ofType(configurationType);
         expectedResult.getTypeRepresentations().put(identifier, TypeRepresentation.ofConcrete(identifier,
-                Collections.singletonMap("name", STRING_IDENTIFIER)));
+                Collections.singletonMap("name", TypeDefinition.of(STRING_IDENTIFIER))));
 
         final ResourceMethod resourceGetMethod = ResourceMethodBuilder.withMethod(HttpMethod.GET)
                 .andResponse(200, ResponseBuilder.withResponseBody(identifier).build())

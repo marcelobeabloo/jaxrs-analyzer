@@ -6,23 +6,12 @@ import static com.sebastian_daschner.jaxrs_analyzer.model.Types.DOUBLE_TYPES;
 import static com.sebastian_daschner.jaxrs_analyzer.model.Types.INTEGER_TYPES;
 import static com.sebastian_daschner.jaxrs_analyzer.model.Types.PRIMITIVE_BOOLEAN;
 import static com.sebastian_daschner.jaxrs_analyzer.model.Types.STRING;
-import static java.util.Collections.singletonMap;
-
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.json.JsonReader;
-import javax.json.JsonWriter;
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonGenerator;
-
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentationVisitor;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Adds the JSON representation of type identifiers to String builders.
@@ -50,10 +39,10 @@ class JsonRepresentationAppender implements TypeRepresentationVisitor {
             visitedTypes.add(representation.getIdentifier());
             representation.getProperties().entrySet().stream().sorted(mapKeyComparator()).forEach(e -> {
                 builder.append('"').append(e.getKey()).append("\":");
-                final TypeRepresentation nestedRepresentation = representations.get(e.getValue());
+                final TypeRepresentation nestedRepresentation = representations.get(e.getValue().getTypeIdentifier());
                 if (nestedRepresentation == null)
-                    builder.append(toPrimitiveType(e.getValue()));
-                else if (visitedTypes.contains(e.getValue()))
+                    builder.append(toPrimitiveType(e.getValue().getTypeIdentifier()));
+                else if (visitedTypes.contains(e.getValue().getTypeIdentifier()))
                     // prevent infinite loop from recursively nested types
                     builder.append("{}");
                 else
@@ -77,10 +66,8 @@ class JsonRepresentationAppender implements TypeRepresentationVisitor {
 
     @Override
     public void visit(final TypeRepresentation.EnumTypeRepresentation representation) {
-        final String values = '"' + representation.getEnumValues().stream().sorted()
-                .collect(Collectors.joining("|")) + '"';
-
-        builder.append(values.length() == 2 ? "\"string\"" : values);
+        final String value = '"' + representation.getEnumValues().stream().findAny().orElse("string") + '"';
+        builder.append(value);
     }
 
     private static String toPrimitiveType(final TypeIdentifier value) {

@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.sebastian_daschner.jaxrs_analyzer.model.rest;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
- * Represents a response containing meta information which is sent for a specific status code.
+ * Represents a response containing meta information which is sent for a
+ * specific status code.
  *
  * @author Sebastian Daschner
  */
@@ -29,9 +31,10 @@ public class Response {
     private final Set<String> headers = new HashSet<>();
     private final TypeIdentifier responseBody;
     private final String description;
+    private Map<String, String> responseBodyDoc = new HashMap<>();
 
     public Response() {
-        this(null,null);
+        this(null, null, null);
     }
 
     public Response(final TypeIdentifier responseBody) {
@@ -39,9 +42,10 @@ public class Response {
         this.description = null;
     }
 
-    public Response(TypeIdentifier responseBody, String description) {
+    public Response(TypeIdentifier responseBody, String description, Map<String, String> javadoc) {
         this.responseBody = responseBody;
         this.description = description;
+        this.responseBodyDoc = javadoc;
     }
 
     public Set<String> getHeaders() {
@@ -56,14 +60,28 @@ public class Response {
         return description;
     }
 
+    public Map<String, String> getResponseBodyDoc() {
+        return responseBodyDoc;
+    }
+
+    public void setResponseBodyDoc(Map<String, String> responseBodyDoc) {
+        this.responseBodyDoc = responseBodyDoc;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Response response = (Response) o;
 
-        if (!headers.equals(response.headers)) return false;
+        if (!headers.equals(response.headers)) {
+            return false;
+        }
         return !(responseBody != null ? !responseBody.equals(response.responseBody) : response.responseBody != null);
     }
 
@@ -76,10 +94,10 @@ public class Response {
 
     @Override
     public String toString() {
-        return "Response{" +
-                "headers=" + headers +
-                ", responseBody=" + responseBody +
-                '}';
+        return "Response{"
+                + "headers=" + headers
+                + ", responseBody=" + responseBody
+                + '}';
     }
 
 }

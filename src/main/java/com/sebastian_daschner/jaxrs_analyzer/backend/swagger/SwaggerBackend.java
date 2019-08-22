@@ -17,14 +17,14 @@
 package com.sebastian_daschner.jaxrs_analyzer.backend.swagger;
 
 import com.sebastian_daschner.jaxrs_analyzer.backend.Backend;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.mapKeyComparator;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.parameterComparator;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.*;
 import com.sebastian_daschner.jaxrs_analyzer.utils.StringUtils;
-
-import javax.json.*;
-import javax.json.stream.JsonGenerator;
-import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import static java.util.Collections.singletonMap;
+import static java.util.Comparator.comparing;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,11 +32,9 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-
-import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.mapKeyComparator;
-import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.parameterComparator;
-import static java.util.Collections.singletonMap;
-import static java.util.Comparator.comparing;
+import javax.json.*;
+import javax.json.stream.JsonGenerator;
+import javax.ws.rs.core.Response;
 
 /**
  * A backend which produces a Swagger JSON representation of the resources.
@@ -191,7 +189,7 @@ public class SwaggerBackend implements Backend {
                     .add("name", "body")
                     .add("in", "body")
                     .add("required", true)
-                    .add("schema", schemaBuilder.build(method.getRequestBody()));
+                    .add("schema", schemaBuilder.build(TypeDefinition.of(method.getRequestBody())));
             if (!StringUtils.isBlank(method.getRequestBodyDescription()))
                 requestBuilder.add("description", method.getRequestBodyDescription());
             parameterBuilder.add(requestBuilder);
@@ -205,7 +203,7 @@ public class SwaggerBackend implements Backend {
                 .forEach(e -> {
                     final String swaggerParameterType = getSwaggerParameterType(parameterType);
                     if (swaggerParameterType != null) {
-                        final JsonObjectBuilder paramBuilder = schemaBuilder.build(e.getType())
+                        final JsonObjectBuilder paramBuilder = schemaBuilder.build(TypeDefinition.of(e.getType()))
                                 .add("name", e.getName())
                                 .add("in", swaggerParameterType)
                                 .add("required", e.getDefaultValue() == null);
@@ -232,7 +230,7 @@ public class SwaggerBackend implements Backend {
                     .add("headers", headers);
 
             if (e.getValue().getResponseBody() != null) {
-                final JsonObject schema = schemaBuilder.build(e.getValue().getResponseBody()).build();
+                final JsonObject schema = schemaBuilder.build(TypeDefinition.of(e.getValue().getResponseBody())).build();
                 if (!schema.isEmpty())
                     response.add("schema", schema);
             }

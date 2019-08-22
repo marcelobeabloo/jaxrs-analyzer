@@ -1,9 +1,9 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results.testclasses.typeanalyzer;
 
 import com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
 import java.util.*;
 
 public class TestClass17 extends SuperTestClass3 {
@@ -28,16 +28,16 @@ public class TestClass17 extends SuperTestClass3 {
     }
 
     public static Set<TypeRepresentation> expectedTypeRepresentations() {
-        final Map<String, TypeIdentifier> properties = new HashMap<>();
+        final Map<String, TypeDefinition> properties = new HashMap<>();
 
         final TypeIdentifier superTestClass3 = TypeIdentifier.ofType("Lcom/sebastian_daschner/jaxrs_analyzer/analysis/results/testclasses/typeanalyzer/SuperTestClass3;");
         final TypeIdentifier stringIdentifier = TypeUtils.STRING_IDENTIFIER;
-        properties.put("hello", stringIdentifier);
-        properties.put("world", stringIdentifier);
-        properties.put("partner", superTestClass3);
+        properties.put("hello", TypeDefinition.of(stringIdentifier));
+        properties.put("world", TypeDefinition.of(stringIdentifier));
+        properties.put("partner", TypeDefinition.of(superTestClass3));
 
         return new HashSet<>(Arrays.asList(TypeRepresentation.ofConcrete(expectedIdentifier(), properties),
-                TypeRepresentation.ofConcrete(superTestClass3, Collections.singletonMap("hello", stringIdentifier))));
+                TypeRepresentation.ofConcrete(superTestClass3, Collections.singletonMap("hello", TypeDefinition.of(stringIdentifier)))));
     }
 
     public static TypeIdentifier expectedIdentifier() {

@@ -17,11 +17,11 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results.testclasses.typeanalyzer;
 
 import com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
-import javax.xml.bind.annotation.*;
 import java.util.*;
+import javax.xml.bind.annotation.*;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -42,13 +42,13 @@ public class TestClass5 {
     }
 
     public static Set<TypeRepresentation> expectedTypeRepresentations() {
-        final Map<String, TypeIdentifier> properties = new HashMap<>();
+        final Map<String, TypeDefinition> properties = new HashMap<>();
 
         final TypeIdentifier listIdentifier = TypeIdentifier.ofType("Ljava/util/List<Ljava/lang/String;>;");
         final TypeIdentifier setIdentifier = TypeIdentifier.ofType("Ljava/util/Set<Ljava/lang/String;>;");
 
-        properties.put("first", listIdentifier);
-        properties.put("second", setIdentifier);
+        properties.put("first", TypeDefinition.of(listIdentifier));
+        properties.put("second", TypeDefinition.of(setIdentifier));
 
         final TypeRepresentation testClass5 = TypeRepresentation.ofConcrete(expectedIdentifier(), properties);
         final TypeRepresentation string = TypeRepresentation.ofConcrete(TypeUtils.STRING_IDENTIFIER);

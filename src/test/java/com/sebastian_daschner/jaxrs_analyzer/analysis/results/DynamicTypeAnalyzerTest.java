@@ -1,23 +1,22 @@
 package com.sebastian_daschner.jaxrs_analyzer.analysis.results;
 
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.STRING_IDENTIFIER;
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.STRING_LIST_IDENTIFIER;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-import org.junit.Before;
-import org.junit.Test;
-
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonNumber;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.STRING_IDENTIFIER;
-import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.STRING_LIST_IDENTIFIER;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DynamicTypeAnalyzerTest {
 
@@ -69,7 +68,7 @@ public class DynamicTypeAnalyzerTest {
         final TypeRepresentation.ConcreteTypeRepresentation concrete = getRepresentation(secondName);
         assertThat(concrete.getIdentifier().getName(), is(secondName));
         assertThat(concrete.getProperties().size(), is(1));
-        assertThat(concrete.getProperties().get("key").getType(), is(Types.DOUBLE));
+        assertThat(concrete.getProperties().get("key").getTypeIdentifier().getType(), is(Types.DOUBLE));
     }
 
     @Test
@@ -93,21 +92,21 @@ public class DynamicTypeAnalyzerTest {
         TypeRepresentation.ConcreteTypeRepresentation concrete = getRepresentation(thirdName);
         assertThat(concrete.getIdentifier().getName(), is(thirdName));
         assertThat(concrete.getProperties().size(), is(2));
-        assertThat(concrete.getProperties().get("key").getType(), is(Types.STRING));
-        assertThat(concrete.getProperties().get("number").getType(), is(Types.DOUBLE));
+        assertThat(concrete.getProperties().get("key").getTypeIdentifier().getType(), is(Types.STRING));
+        assertThat(concrete.getProperties().get("number").getTypeIdentifier().getType(), is(Types.DOUBLE));
 
         concrete = getRepresentation(secondName);
         assertThat(concrete.getIdentifier().getName(), is(secondName));
         assertThat(concrete.getProperties().size(), is(3));
-        assertThat(concrete.getProperties().get("key").getType(), is(Types.DOUBLE));
-        final String fourthName = concrete.getProperties().get("object").getName();
-        assertThat(concrete.getProperties().get("object").getType(), is(Types.JSON));
-        final String fifthName = concrete.getProperties().get("array").getName();
-        assertThat(concrete.getProperties().get("array").getType(), is(Types.JSON));
+        assertThat(concrete.getProperties().get("key").getTypeIdentifier().getType(), is(Types.DOUBLE));
+        final String fourthName = concrete.getProperties().get("object").getTypeIdentifier().getName();
+        assertThat(concrete.getProperties().get("object").getTypeIdentifier().getType(), is(Types.JSON));
+        final String fifthName = concrete.getProperties().get("array").getTypeIdentifier().getName();
+        assertThat(concrete.getProperties().get("array").getTypeIdentifier().getType(), is(Types.JSON));
 
         concrete = getRepresentation(fourthName);
         assertThat(concrete.getIdentifier().getName(), is(fourthName));
-        assertThat(concrete.getProperties().get("string").getType(), is(Types.STRING));
+        assertThat(concrete.getProperties().get("string").getTypeIdentifier().getType(), is(Types.STRING));
 
         collection = getRepresentation(fifthName);
         assertThat(collection.getIdentifier().getName(), is(fifthName));
@@ -119,7 +118,7 @@ public class DynamicTypeAnalyzerTest {
         // should be ignored
         typeRepresentations.put(STRING_LIST_IDENTIFIER, TypeRepresentation.ofCollection(STRING_LIST_IDENTIFIER, TypeRepresentation.ofConcrete(STRING_IDENTIFIER)));
         final TypeIdentifier modelIdentifier = TypeIdentifier.ofType("com.sebastian_daschner.test.Model");
-        final Map<String, TypeIdentifier> modelProperties = Collections.singletonMap("string", TypeUtils.STRING_IDENTIFIER);
+        final Map<String, TypeDefinition> modelProperties = Collections.singletonMap("string", TypeDefinition.of(TypeUtils.STRING_IDENTIFIER));
         typeRepresentations.put(modelIdentifier, TypeRepresentation.ofConcrete(modelIdentifier, modelProperties));
 
         TypeIdentifier identifier = cut.analyze(Json.createArrayBuilder().add("foobar").build());
@@ -144,21 +143,21 @@ public class DynamicTypeAnalyzerTest {
         TypeRepresentation.ConcreteTypeRepresentation concrete = getRepresentation(secondName);
         assertThat(concrete.getIdentifier().getName(), is(secondName));
         assertThat(concrete.getProperties().size(), is(4));
-        assertThat(concrete.getProperties().get("key").getType(), is(Types.DOUBLE));
-        assertThat(concrete.getProperties().get("object").getName(), is(thirdName));
-        assertThat(concrete.getProperties().get("object").getType(), is(Types.JSON));
-        assertThat(concrete.getProperties().get("array").getName(), is(firstName));
-        assertThat(concrete.getProperties().get("array").getType(), is(Types.JSON));
-        final String fourthName = concrete.getProperties().get("other").getName();
-        assertThat(concrete.getProperties().get("other").getType(), is(Types.JSON));
+        assertThat(concrete.getProperties().get("key").getTypeIdentifier().getType(), is(Types.DOUBLE));
+        assertThat(concrete.getProperties().get("object").getTypeIdentifier().getName(), is(thirdName));
+        assertThat(concrete.getProperties().get("object").getTypeIdentifier().getType(), is(Types.JSON));
+        assertThat(concrete.getProperties().get("array").getTypeIdentifier().getName(), is(firstName));
+        assertThat(concrete.getProperties().get("array").getTypeIdentifier().getType(), is(Types.JSON));
+        final String fourthName = concrete.getProperties().get("other").getTypeIdentifier().getName();
+        assertThat(concrete.getProperties().get("other").getTypeIdentifier().getType(), is(Types.JSON));
 
         concrete = getRepresentation(thirdName);
         assertThat(concrete.getIdentifier().getName(), is(thirdName));
-        assertThat(concrete.getProperties().get("string").getType(), is(Types.STRING));
+        assertThat(concrete.getProperties().get("string").getTypeIdentifier().getType(), is(Types.STRING));
 
         concrete = getRepresentation(fourthName);
         assertThat(concrete.getIdentifier().getName(), is(fourthName));
-        assertThat(concrete.getProperties().get("hello").getType(), is(Types.STRING));
+        assertThat(concrete.getProperties().get("hello").getTypeIdentifier().getType(), is(Types.STRING));
     }
 
     private <T extends TypeRepresentation> T getRepresentation(final String firstName) {

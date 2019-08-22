@@ -18,14 +18,14 @@ package com.sebastian_daschner.jaxrs_analyzer.analysis.results.testclasses.typea
 
 import com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
-import javax.xml.bind.annotation.XmlElement;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlElement;
 
 public class TestClass6 {
 
@@ -54,11 +54,11 @@ public class TestClass6 {
     }
 
     public static Set<TypeRepresentation> expectedTypeRepresentations() {
-        final Map<String, TypeIdentifier> properties = new HashMap<>();
+        final Map<String, TypeDefinition> properties = new HashMap<>();
 
-        properties.put("first", TypeIdentifier.ofType(Types.PRIMITIVE_BOOLEAN));
-        properties.put("second", TypeUtils.STRING_IDENTIFIER);
-        properties.put("third", TypeUtils.STRING_IDENTIFIER);
+        properties.put("first", TypeDefinition.of(TypeIdentifier.ofType(Types.PRIMITIVE_BOOLEAN)));
+        properties.put("second", TypeDefinition.of(TypeUtils.STRING_IDENTIFIER));
+        properties.put("third", TypeDefinition.of(TypeUtils.STRING_IDENTIFIER));
 
         return Collections.singleton(TypeRepresentation.ofConcrete(expectedIdentifier(), properties));
     }

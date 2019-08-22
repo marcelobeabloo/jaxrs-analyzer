@@ -1,15 +1,8 @@
 package com.sebastian_daschner.jaxrs_analyzer.backend.markdown;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
+import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.MODEL_IDENTIFIER;
 import com.sebastian_daschner.jaxrs_analyzer.backend.Backend;
+import static com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend.INLINE_PRETTIFY;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourceMethodBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResourcesBuilder;
 import com.sebastian_daschner.jaxrs_analyzer.builder.ResponseBuilder;
@@ -17,15 +10,18 @@ import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.HttpMethod;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.Project;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.Resources;
+import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeRepresentation;
-
+import java.util.Collection;
 import static java.util.Collections.singletonMap;
-
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import static org.junit.Assert.assertEquals;
-
-import static com.sebastian_daschner.jaxrs_analyzer.analysis.results.TypeUtils.MODEL_IDENTIFIER;
-import static com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend.INLINE_PRETTIFY;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 
 @RunWith(Parameterized.class)
@@ -59,7 +55,7 @@ public class MarkdownBackendTest {
         final TypeIdentifier intIdentifier = TypeIdentifier.ofType(Types.PRIMITIVE_INT);
 
         TypeIdentifier identifier;
-        Map<String, TypeIdentifier> properties = new HashMap<>();
+        Map<String, TypeDefinition> properties = new HashMap<>();
 
         final Resources getRestRes1String = ResourcesBuilder.withBase("rest")
                 .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.GET, "Lorem Ipsum")
@@ -109,8 +105,8 @@ public class MarkdownBackendTest {
                         "*Response Body*: (`java.lang.String`)\n\n", true);
 
         identifier = TypeIdentifier.ofDynamic();
-        properties.put("key", stringIdentifier);
-        properties.put("another", intIdentifier);
+        properties.put("key", TypeDefinition.of(stringIdentifier));
+        properties.put("another", TypeDefinition.of(intIdentifier));
         final Resources getRestRes1Json = ResourcesBuilder.withBase("rest")
                 .andTypeRepresentation(identifier,
                         TypeRepresentation.ofConcrete(identifier, properties))
@@ -150,8 +146,8 @@ public class MarkdownBackendTest {
 
         identifier = TypeIdentifier.ofDynamic();
         properties = new HashMap<>();
-        properties.put("key", stringIdentifier);
-        properties.put("another", intIdentifier);
+        properties.put("key", TypeDefinition.of(stringIdentifier));
+        properties.put("another", TypeDefinition.of(intIdentifier));
         add(data, ResourcesBuilder.withBase("rest")
                         .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(TypeIdentifier.ofDynamic(), properties)))
                         .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.GET)
@@ -191,7 +187,7 @@ public class MarkdownBackendTest {
 
         identifier = TypeIdentifier.ofDynamic();
         properties = new HashMap<>();
-        properties.put("key", stringIdentifier);
+        properties.put("key", TypeDefinition.of(stringIdentifier));
         add(data, ResourcesBuilder.withBase("rest")
                         .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(TypeIdentifier.ofDynamic(), properties)))
                         .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.GET)
@@ -212,8 +208,8 @@ public class MarkdownBackendTest {
                         "```javascript\n" + "[{\"key\":\"string\"}]\n" + "```\n\n\n\n", false);
 
         properties = new HashMap<>();
-        properties.put("name", stringIdentifier);
-        properties.put("value", intIdentifier);
+        properties.put("name", TypeDefinition.of(stringIdentifier));
+        properties.put("value", TypeDefinition.of(intIdentifier));
         add(data, ResourcesBuilder.withBase("rest")
                         .andTypeRepresentation(MODEL_IDENTIFIER, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties))
                         .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.GET)
@@ -235,8 +231,8 @@ public class MarkdownBackendTest {
 
         identifier = TypeIdentifier.ofType("Ljava/util/List<Lcom/sebastian_daschner/test/Model;>;");
         properties = new HashMap<>();
-        properties.put("name", stringIdentifier);
-        properties.put("value", intIdentifier);
+        properties.put("name", TypeDefinition.of(stringIdentifier));
+        properties.put("value", TypeDefinition.of(intIdentifier));
         add(data, ResourcesBuilder.withBase("rest")
                         .andTypeRepresentation(identifier, TypeRepresentation.ofCollection(identifier, TypeRepresentation.ofConcrete(MODEL_IDENTIFIER, properties)))
                         .andResource("res1", ResourceMethodBuilder.withMethod(HttpMethod.GET)
