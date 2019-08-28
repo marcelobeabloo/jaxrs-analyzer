@@ -639,4 +639,47 @@ public final class JavaUtils {
         }
         return new String(buf, off, len + 1);
     }
+
+    public static boolean isTypeCollection(String type) {
+        if (type.contains("<")) {
+            final int typeParamStart = type.indexOf('<');
+            type = type.substring(0, typeParamStart) + ";";
+            return Arrays.asList(Types.COLLECTION, Types.LIST, Types.SET).contains(type);
+        }
+        return false;
+    }
+
+    /**
+     * Tries to get the most specific type.
+     *
+     * For instance:
+     * <ul>
+     * <li>Lcom/example/Dummy; -> Lcom/example/Dummy;</li>
+     * <li>Ljava/util/List<Lcom/example/Dummy;>; -> Lcom/example/Dummy;</li>
+     * </ul>
+     *
+     * @param type
+     * @return
+     */
+    public static String toSpecificType(String type) {
+        if (Objects.isNull(type) || type.isEmpty()) {
+            return "";
+        }
+        if (JavaUtils.isTypeCollection(type)) {
+            final int startIndex = type.indexOf('<');
+            final int endIndex = type.lastIndexOf('>');
+            type = type.substring(startIndex + 1, endIndex);
+        }
+        return type;
+    }
+
+    public static String toSpecificClassName(String type) {
+        String specificType = toSpecificType(type);
+        return specificType.isEmpty() ? "" : JavaUtils.toClassName(specificType);
+    }
+
+    public static boolean isJDKType(final String type) {
+        // exclude java, javax, etc. packages
+        return Types.PRIMITIVE_TYPES.contains(type) || type.startsWith("Ljava/") || type.startsWith("Ljavax/");
+    }
 }

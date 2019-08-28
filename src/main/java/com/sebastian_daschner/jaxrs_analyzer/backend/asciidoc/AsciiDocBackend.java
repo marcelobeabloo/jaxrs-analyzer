@@ -5,6 +5,7 @@ import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.mapK
 import static com.sebastian_daschner.jaxrs_analyzer.backend.ComparatorUtils.parameterComparator;
 import com.sebastian_daschner.jaxrs_analyzer.backend.JsonDefinitionAppender;
 import com.sebastian_daschner.jaxrs_analyzer.backend.StringBackend;
+import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.toReadableType;
 import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.MethodParameter;
@@ -22,6 +23,7 @@ import com.sebastian_daschner.jaxrs_analyzer.utils.StringUtils;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -132,7 +134,7 @@ public class AsciiDocBackend extends StringBackend {
                 if (e.getValue().getDescription() != null) {
                     builder.append("\n\n").append(e.getValue().getDescription()).append("\n\n");
                 }
-                TypeIdentifier responseType = unwrapCollectionIfNeeded(response.getResponseBody());
+                TypeIdentifier responseType = TypeIdentifier.ofType(response.getResponseBody().getType());
                 Optional.ofNullable(resources.getTypeRepresentations().get(responseType)).
                         ifPresent(this::generateResponseBodyTables);
                 Optional.ofNullable(resources.getTypeRepresentations().get(response.getResponseBody())).ifPresent(
@@ -177,38 +179,23 @@ public class AsciiDocBackend extends StringBackend {
         });
     }
 
-    /**
-     * FIXME :: se puede cambiar por TypeRepresentation ->
-     * Collection.getRepresentation() ??
-     *
-     * Extract the nested type identifier if it is a Collection, for instance a
-     * {@link java.util.List} or a {@link java.util.Set}
-     *
-     * @param responseBody
-     * @return
-     */
-    private TypeIdentifier unwrapCollectionIfNeeded(TypeIdentifier typeIdentifier) {
-        String type = typeIdentifier.getType();
-        boolean isCollection = type.contains("java/util/List") || type.contains("java/util/Set");
-        return TypeIdentifier.ofType(isCollection ? type.substring(type.indexOf("<") + 1, type.length() - 2) : type);
-    }
-
     private void recollectRepresentations(TypeRepresentation representation, List<TypeRepresentation> representations) {
         if (representation instanceof ConcreteTypeRepresentation) {
             ConcreteTypeRepresentation concrete = (ConcreteTypeRepresentation) representation;
             concrete.getProperties().entrySet().stream().sorted(mapKeyComparator()).forEach(e -> {
-                TypeRepresentation typeRepresentation = resources.getTypeRepresentations().get(e.getValue().getTypeIdentifier());
+                TypeIdentifier identifier = e.getValue().getTypeIdentifier();
+                TypeRepresentation typeRepresentation = resources.getTypeRepresentations().get(identifier);
+                if (Objects.isNull(typeRepresentation) && JavaUtils.isTypeCollection(identifier.getType())) {
+                    identifier = TypeIdentifier.ofType(JavaUtils.toSpecificType(identifier.getType()));
+                    typeRepresentation = resources.getTypeRepresentations().get(identifier);
+                }
                 Optional.ofNullable(typeRepresentation).ifPresent(r -> {
                     if (r instanceof CollectionTypeRepresentation) {
-                        // if collection, ensure is not a collection of Java types,
-                        // for instance java.util.List<java.util.Long>
                         CollectionTypeRepresentation collection = (CollectionTypeRepresentation) r;
-                        TypeRepresentation nestedTypeRepresentation
-                                = resources.getTypeRepresentations().get(collection.getRepresentation().getIdentifier());
-                        Optional.ofNullable(nestedTypeRepresentation).ifPresent(nr -> {
-                            representations.add(nr);
-                            recollectRepresentations(nr, representations);
-                        });
+                        if (!JavaUtils.isJDKType(collection.getRepresentation().getIdentifier().getType())) {
+                            representations.add(collection.getRepresentation());
+                            recollectRepresentations(collection.getRepresentation(), representations);
+                        }
                     } else {
                         representations.add(r);
                         recollectRepresentations(r, representations);
@@ -267,7 +254,7 @@ public class AsciiDocBackend extends StringBackend {
         final TypeRepresentationVisitor appender = new JsonDefinitionAppender(sBuilder, resources.getTypeRepresentations());
         typeRepresentation.accept(appender);
         final String json = sBuilder.toString();
-        try ( JsonReader jsonReader = Json.createReader(new StringReader(json))) {
+        try (JsonReader jsonReader = Json.createReader(new StringReader(json))) {
             JsonObject properties = jsonReader.readObject();
             return createTable(properties, (ConcreteTypeRepresentation) typeRepresentation, hasRequiredColumn);
         }
@@ -278,7 +265,7 @@ public class AsciiDocBackend extends StringBackend {
         final TypeRepresentationVisitor appender = new JsonDefinitionAppender(sBuilder, resources.getTypeRepresentations());
         typeRepresentation.accept(appender);
         final String json = sBuilder.toString();
-        try ( JsonReader jsonReader = Json.createReader(new StringReader(json))) {
+        try (JsonReader jsonReader = Json.createReader(new StringReader(json))) {
             JsonObject properties = jsonReader.readArray().getJsonObject(0);
             return createTable(properties, typeRepresentation, hasRequiredColumn);
         }
@@ -345,10 +332,10 @@ public class AsciiDocBackend extends StringBackend {
 
     private void generateEnumTable(EnumTypeRepresentation r) {
         builder.append("\n\n").append(".Enumeration ").append(toTypeOrCollection(r.getIdentifier())).append("\n");
-        builder.append("[width=\"15%\",options=\"header\"]\n");
+        builder.append("[width=\"25%\",options=\"header\"]\n");
         builder.append("|===\n");
         builder.append("|Values\n\n");
-        r.getEnumValues().forEach(v -> builder.append("|").append(v).append("\n"));
+        r.getEnumValues().stream().sorted().forEach(v -> builder.append("|").append(v).append("\n"));
         builder.append("|===\n\n");
     }
 

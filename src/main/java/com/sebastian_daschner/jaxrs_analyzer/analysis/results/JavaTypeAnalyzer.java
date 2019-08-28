@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils;
 import static com.sebastian_daschner.jaxrs_analyzer.model.JavaUtils.*;
-import com.sebastian_daschner.jaxrs_analyzer.model.Types;
 import static com.sebastian_daschner.jaxrs_analyzer.model.Types.COLLECTION;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeDefinition;
 import com.sebastian_daschner.jaxrs_analyzer.model.rest.TypeIdentifier;
@@ -66,7 +65,7 @@ class JavaTypeAnalyzer {
      * @return The (root) type identifier
      */
     // TODO consider arrays
-    TypeIdentifier analyze(final String rootType, Map<String, String> javaDoc) {
+    TypeIdentifier analyze(final String rootType, Map<String, Map<String, String>> javaDoc) {
         final String type = ResponseTypeNormalizer.normalizeResponseWrapper(rootType);
         final TypeIdentifier identifier = TypeIdentifier.ofType(type);
 
@@ -78,12 +77,7 @@ class JavaTypeAnalyzer {
         return identifier;
     }
 
-    private static boolean isJDKType(final String type) {
-        // exclude java, javax, etc. packages
-        return Types.PRIMITIVE_TYPES.contains(type) || type.startsWith("Ljava/") || type.startsWith("Ljavax/");
-    }
-
-    private TypeRepresentation analyzeInternal(final TypeIdentifier identifier, final String type, Map<String, String> javaDoc) {
+    private TypeRepresentation analyzeInternal(final TypeIdentifier identifier, final String type, Map<String, Map<String, String>> javaDoc) {
         if (isAssignableTo(type, COLLECTION)) {
             final String containedType = ResponseTypeNormalizer.normalizeCollection(type);
             return TypeRepresentation.ofCollection(identifier, analyzeInternal(TypeIdentifier.ofType(containedType), containedType, javaDoc));
@@ -98,7 +92,7 @@ class JavaTypeAnalyzer {
         return TypeRepresentation.ofConcrete(identifier, analyzeClass(type, loadedClass, javaDoc));
     }
 
-    private Map<String, TypeDefinition> analyzeClass(final String type, final Class<?> clazz, Map<String, String> javaDoc) {
+    private Map<String, TypeDefinition> analyzeClass(final String type, final Class<?> clazz, Map<String, Map<String, String>> javaDoc) {
         if (clazz == null || isJDKType(type)) {
             return Collections.emptyMap();
         }
@@ -115,15 +109,22 @@ class JavaTypeAnalyzer {
         final Stream<Class<?>> allSuperTypes = Stream.concat(Stream.of(clazz.getInterfaces()), Stream.of(clazz.getSuperclass()));
         allSuperTypes.filter(Objects::nonNull).map(Type::getDescriptor).map(t -> analyzeClass(t, loadClassFromType(t), javaDoc)).forEach(properties::putAll);
 
+        // we have to add the relevant fields and getters of the superclasses
+        final Stream<Class<?>> allSuperTypesForFields = Stream.concat(Stream.of(clazz.getInterfaces()), Stream.of(clazz.getSuperclass()));
+        allSuperTypesForFields.map(c -> c.getDeclaredFields()).flatMap(sf -> Arrays.stream(sf)).filter(f -> isRelevant(f, value)).forEach(rf -> relevantFields.add(rf));
+        final Stream<Class<?>> allSuperTypesForGetters = Stream.concat(Stream.of(clazz.getInterfaces()), Stream.of(clazz.getSuperclass()));
+        allSuperTypesForGetters.map(c -> c.getDeclaredMethods()).flatMap(sm -> Arrays.stream(sm)).filter(m -> isRelevant(m, value)).forEach(rm -> relevantGetters.add(rm));
+
+        String readableType = JavaUtils.toClassName(type);
         Stream.concat(
                 relevantFields.stream().map(f -> mapField(f, type)),
                 relevantGetters.stream().map(g -> mapGetter(g, type))
-        ).filter(Objects::nonNull).forEach(props -> {
-            TypeIdentifier typeIdent = TypeIdentifier.ofType(props.get("type"));
-            Boolean required = Boolean.valueOf(props.get("required"));
-            String description = javaDoc.get(props.get("name"));
-            properties.put(props.get("name"), TypeDefinition.of(typeIdent, required, description));
-            analyze(props.get("type"), Collections.emptyMap());
+        ).filter(Objects::nonNull).forEach(property -> {
+            TypeIdentifier typeIdent = TypeIdentifier.ofType(property.get("type"));
+            Boolean required = Boolean.valueOf(property.get("required"));
+            String description = Objects.nonNull(javaDoc.get(readableType)) ? javaDoc.get(readableType).get(property.get("name")) : null;
+            properties.put(property.get("name"), TypeDefinition.of(typeIdent, required, description));
+            analyze(property.get("type"), javaDoc);
         });
 
         return properties;

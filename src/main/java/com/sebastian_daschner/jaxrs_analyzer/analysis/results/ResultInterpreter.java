@@ -48,6 +48,7 @@ public class ResultInterpreter {
     /**
      * Interprets the class results.
      *
+     * @param classResults The class results
      * @return All REST resources
      */
     public Resources interpret(final Set<ClassResult> classResults) {
@@ -232,7 +233,7 @@ public class ResultInterpreter {
                 .forEach(r -> r.getStatuses().add(javax.ws.rs.core.Response.Status.OK.getStatusCode()));
     }
 
-    private void interpretResponse(final HttpResponse httpResponse, final ResourceMethod method, final Map<String, String> responseBodyDoc) {
+    private void interpretResponse(final HttpResponse httpResponse, final ResourceMethod method, final Map<String, Map<String, String>> responseBodyDoc) {
         method.getResponseMediaTypes().addAll(httpResponse.getContentTypes());
         httpResponse.getStatuses().forEach(s -> {
             Response response = httpResponse.getInlineEntities().stream().findAny()
@@ -240,7 +241,7 @@ public class ResultInterpreter {
 
             if (response == null) {
                 // no inline entities -> potential class type will be considered
-                Map<String, String> javadoc = (s == 200) ? responseBodyDoc : Collections.emptyMap();
+                Map<String, Map<String, String>> javadoc = (s == 200) ? responseBodyDoc : Collections.emptyMap();
                 response = httpResponse.getEntityTypes().isEmpty() ? new Response()
                         : new Response(javaTypeAnalyzer.analyze(JavaUtils.determineMostSpecificType(httpResponse.getEntityTypes().toArray(new String[0])), javadoc));
             }

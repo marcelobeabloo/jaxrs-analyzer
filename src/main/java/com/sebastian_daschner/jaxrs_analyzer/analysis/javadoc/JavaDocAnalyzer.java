@@ -76,19 +76,38 @@ public class JavaDocAnalyzer {
 
             m.setMethodDoc(value);
 
-            String requestBodyCleared = clearType(m.getRequestBodyType());
-            Optional.ofNullable(classComments.get(requestBodyCleared)).ifPresent(c -> c.getFieldComments().forEach(field -> {
-                m.getRequestBodyDoc().put(field.getName(), field.getComment());
-            }));
+            String requestBodyCleared = JavaUtils.toSpecificClassName(m.getRequestBodyType());
+            addJavadocEntry(requestBodyCleared, m.getRequestBodyDoc());
 
-            String returnTypeCleared = clearType(m.getOriginalMethodSignature().getReturnType());
-            Optional.ofNullable(classComments.get(returnTypeCleared))
-                    .ifPresent(c -> c.getFieldComments().forEach(field -> m.getResponseBodyDoc().put(field.getName(), field.getComment())));
+            String returnTypeCleared = JavaUtils.toSpecificClassName(m.getOriginalMethodSignature().getReturnType());
+            addJavadocEntry(returnTypeCleared, m.getResponseBodyDoc());
         }));
     }
 
-    private String clearType(String type) {
-        return (Objects.isNull(type) || type.isEmpty()) ? "" : JavaUtils.toClassName(type);
+    private void addJavadocEntry(String requestType, Map<String, Map<String, String>> entries) {
+        if (!requestType.isEmpty()) {
+            Map<String, String> entryDoc = new HashMap<>();
+            retrieveHierarchy(requestType, new ArrayList<>()).forEach(className -> {
+                Optional.ofNullable(classComments.get(className)).ifPresent(classComment -> {
+                    classComment.getFieldComments().forEach(field -> {
+                        entryDoc.put(field.getName(), field.getComment());
+                        findTypeBestEffort(field.getType()).ifPresent(nestedRequestType -> {
+                            addJavadocEntry(nestedRequestType, entries);
+                        });
+                    });
+                });
+            });
+            entries.put(requestType, entryDoc);
+        }
+    }
+
+    private List<String> retrieveHierarchy(String className, List<String> classNames) {
+        Class<?> clazz = JavaUtils.loadClassFromName(className);
+        classNames.add(className.replace('.', '/'));
+        if (Objects.nonNull(clazz.getSuperclass())) {
+            retrieveHierarchy(clazz.getSuperclass().getName(), classNames);
+        }
+        return classNames;
     }
 
     private MethodResult findMethodResult(final MethodIdentifier identifier, final ClassResult classResult) {
@@ -138,6 +157,17 @@ public class JavaDocAnalyzer {
         }
         // otherwise use class name (for primitives)
         return JavaUtils.toClassName(originalType).contains(type);
+    }
+
+    private Optional<String> findTypeBestEffort(String type) {
+        if (type.contains("<")) {
+            final int indexStart = type.indexOf("<");
+            final int indexEnd = type.indexOf(">");
+            type = type.substring(indexStart + 1, indexEnd);
+        }
+
+        final String specificType = type;
+        return this.classComments.keySet().stream().filter(key -> key.endsWith("/" + specificType)).findAny();
     }
 
 }

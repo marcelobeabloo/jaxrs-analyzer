@@ -73,8 +73,9 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
     }
 
     private String calculateClassName(ClassOrInterfaceDeclaration classOrInterface) {
-        if (StringUtils.isBlank(packageName))
+        if (StringUtils.isBlank(packageName)) {
             return classOrInterface.getNameAsString();
+        }
         return packageName.replace('.', '/') + "/" + classOrInterface.getNameAsString();
     }
 
@@ -99,8 +100,9 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
             classComment = new ClassComment();
             classComments.put(className, classComment);
         }
+        String fieldType = field.getElementType().asString();
         String fieldName = field.getVariables().get(0).getNameAsString();
-        classComment.getFieldComments().add(createMemberParamTag(fieldName, javadoc.getDescription(), field.getAnnotations().stream()));
+        classComment.getFieldComments().add(createMemberParamTag(fieldType, fieldName, javadoc.getDescription(), field.getAnnotations().stream()));
     }
 
     @Override
@@ -135,24 +137,26 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
                 .map(NodeList::stream)
                 .orElseGet(Stream::empty);
 
-        return createMemberParamTag(tag.getName().orElse("unknown"), tag.getContent(), annotations);
+        return createMemberParamTag(tag.getType().name(), tag.getName().orElse("unknown"), tag.getContent(), annotations);
     }
 
-    private MemberParameterTag createMemberParamTag(String name, JavadocDescription javadocDescription, Stream<AnnotationExpr> annotationStream) {
+    private MemberParameterTag createMemberParamTag(String type, String name, JavadocDescription javadocDescription, Stream<AnnotationExpr> annotationStream) {
         Map<String, String> annotations = annotationStream
                 .filter(Expression::isSingleMemberAnnotationExpr)
                 .collect(Collectors.toMap(a -> a.getName().getIdentifier(),
                         this::createMemberParamValue));
-        return new MemberParameterTag(name, javadocDescription.toText(), annotations);
+        return new MemberParameterTag(type, name, javadocDescription.toText(), annotations);
     }
 
     private String createMemberParamValue(AnnotationExpr a) {
         Expression memberValue = a.asSingleMemberAnnotationExpr().getMemberValue();
-        if (memberValue.getClass().isAssignableFrom(StringLiteralExpr.class))
+        if (memberValue.getClass().isAssignableFrom(StringLiteralExpr.class)) {
             return memberValue.asStringLiteralExpr().asString();
+        }
 
-        if (memberValue.getClass().isAssignableFrom(NameExpr.class))
+        if (memberValue.getClass().isAssignableFrom(NameExpr.class)) {
             return memberValue.asNameExpr().getNameAsString();
+        }
 
         throw new IllegalArgumentException(String.format("Javadoc param type (%s) not supported.", memberValue.toString()));
     }
@@ -160,7 +164,7 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
     private Map<Integer, String> createResponseComments(Javadoc javadoc) {
         return javadoc.getBlockTags().stream()
                 .filter(t -> ResponseCommentExtractor.RESPONSE_TAG_NAME.equalsIgnoreCase(t.getTagName())
-                           || ResponseCommentExtractor.RETURN_TAG_NAME.equalsIgnoreCase(t.getTagName()))
+                || ResponseCommentExtractor.RETURN_TAG_NAME.equalsIgnoreCase(t.getTagName()))
                 .map(t -> t.getContent().toText())
                 .map(ResponseCommentExtractor::extract)
                 .filter(Objects::nonNull)
@@ -168,9 +172,10 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
     }
 
     /**
-     * <b>Note:</b> This will not return the actual identifier but only the simple names of the types (return type &amp; parameter types).
-     * Doing a full type resolving with all imports adds too much complexity at this point.
-     * This is a best-effort approach.
+     * <b>Note:</b> This will not return the actual identifier but only the
+     * simple names of the types (return type &amp; parameter types). Doing a
+     * full type resolving with all imports adds too much complexity at this
+     * point. This is a best-effort approach.
      */
     private MethodIdentifier calculateMethodIdentifier(MethodDeclaration method) {
         String[] parameters = method.getParameters().stream()

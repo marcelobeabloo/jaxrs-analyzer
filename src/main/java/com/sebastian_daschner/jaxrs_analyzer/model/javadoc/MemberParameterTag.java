@@ -12,6 +12,8 @@ import java.util.Map;
  */
 public class MemberParameterTag {
 
+    private final String type;
+
     private final String name;
 
     private final String comment;
@@ -21,10 +23,15 @@ public class MemberParameterTag {
      */
     private final Map<String, String> annotations;
 
-    public MemberParameterTag(String name, String comment, Map<String, String> annotations) {
+    public MemberParameterTag(String type, String name, String comment, Map<String, String> annotations) {
+        this.type = type;
         this.name = name;
         this.comment = comment;
         this.annotations = Collections.unmodifiableMap(annotations);
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getName() {

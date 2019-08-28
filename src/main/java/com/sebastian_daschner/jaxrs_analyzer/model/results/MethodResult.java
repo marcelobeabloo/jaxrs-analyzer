@@ -42,8 +42,8 @@ public class MethodResult {
     private final List<Instruction> instructions = new ArrayList<>();
     private String path;
     private String requestBodyType;
-    private final Map<String, String> requestBodyDoc = new HashMap<>();
-    private final Map<String, String> responseBodyDoc = new HashMap<>();
+    private final Map<String, Map<String, String>> requestBodyDoc = new HashMap<>();
+    private final Map<String, Map<String, String>> responseBodyDoc = new HashMap<>();
     private MethodIdentifier originalMethodSignature;
     private HttpMethod httpMethod;
     private ClassResult subResource;
@@ -87,11 +87,11 @@ public class MethodResult {
         this.requestBodyType = requestBodyType;
     }
 
-    public Map<String, String> getRequestBodyDoc() {
+    public Map<String, Map<String, String>> getRequestBodyDoc() {
         return requestBodyDoc;
     }
 
-    public Map<String, String> getResponseBodyDoc() {
+    public Map<String, Map<String, String>> getResponseBodyDoc() {
         return responseBodyDoc;
     }
 
