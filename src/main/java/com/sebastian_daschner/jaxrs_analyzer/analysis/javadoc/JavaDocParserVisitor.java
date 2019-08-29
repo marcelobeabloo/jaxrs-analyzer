@@ -118,7 +118,7 @@ public class JavaDocParserVisitor extends VoidVisitorAdapter<Void> {
         MethodIdentifier identifier = calculateMethodIdentifier(method);
         String comment = javadoc.getDescription().toText();
         Optional<AnnotationExpr> annotOperation = method.getAnnotationByName("Operation");
-        String operation = annotOperation.isPresent() ? getAnnotationValue(annotOperation.get()) : "Undefined";
+        String operation = annotOperation.isPresent() ? getAnnotationValue(annotOperation.get()) : "";
         List<MemberParameterTag> tags = createMethodParameterTags(javadoc, method);
         Map<Integer, String> responseComments = createResponseComments(javadoc);
         methodComments.put(identifier, new MethodComment(comment, tags, responseComments, classComments.get(className), isDeprecated(javadoc), operation));

@@ -48,7 +48,7 @@ public class AsciiDocBackend extends StringBackend {
 
     @Override
     protected void appendMethod(final String baseUri, final String resource, final ResourceMethod resourceMethod) {
-        builder.append("=== `").append(resourceMethod.getOperation()).append("`\n\n");
+        builder.append("=== `").append(resourceMethod.getOperation().isEmpty() ? resourceMethod.getMethod() : resourceMethod.getOperation()).append("`\n\n");
         builder.append("==== Operation").append("\n").append("----\n");
         builder.append(resourceMethod.getMethod()).append(" ");
         if (!StringUtils.isBlank(baseUri)) {
@@ -249,25 +249,18 @@ public class AsciiDocBackend extends StringBackend {
         builder.append("|===\n\n");
     }
 
-    private String defineObjectBody(final ConcreteTypeRepresentation typeRepresentation, final boolean hasRequiredColumn) {
+    private String defineObjectBody(final TypeRepresentation typeRepresentation, final boolean hasRequiredColumn) {
         final StringBuilder sBuilder = new StringBuilder();
         final TypeRepresentationVisitor appender = new JsonDefinitionAppender(sBuilder, resources.getTypeRepresentations());
         typeRepresentation.accept(appender);
         final String json = sBuilder.toString();
         try (JsonReader jsonReader = Json.createReader(new StringReader(json))) {
             JsonObject properties = jsonReader.readObject();
-            return createTable(properties, (ConcreteTypeRepresentation) typeRepresentation, hasRequiredColumn);
-        }
-    }
-
-    private String defineObjectBody(final CollectionTypeRepresentation typeRepresentation, final boolean hasRequiredColumn) {
-        final StringBuilder sBuilder = new StringBuilder();
-        final TypeRepresentationVisitor appender = new JsonDefinitionAppender(sBuilder, resources.getTypeRepresentations());
-        typeRepresentation.accept(appender);
-        final String json = sBuilder.toString();
-        try (JsonReader jsonReader = Json.createReader(new StringReader(json))) {
-            JsonObject properties = jsonReader.readArray().getJsonObject(0);
-            return createTable(properties, typeRepresentation, hasRequiredColumn);
+            if (typeRepresentation instanceof ConcreteTypeRepresentation) {
+                return createTable(properties, (ConcreteTypeRepresentation) typeRepresentation, hasRequiredColumn);
+            } else {
+                return createTable(properties, (CollectionTypeRepresentation) typeRepresentation, hasRequiredColumn);
+            }
         }
     }
 
@@ -283,7 +276,7 @@ public class AsciiDocBackend extends StringBackend {
                         buildTableProperty(content.asJsonObject(), sbuilder, key, representation, hasRequiredColumn);
                         break;
                     case STRING:
-                        buildTableProperty((JsonString) content, sbuilder, key, representation, hasRequiredColumn);
+                        buildTableProperty((JsonString) content, sbuilder, key, hasRequiredColumn);
                         break;
                     default:
                         LogProvider.error("Other value type to display on the table");
@@ -305,7 +298,7 @@ public class AsciiDocBackend extends StringBackend {
         sbuilder.append("|").append(content.containsKey("description") ? content.getString("description") : "").append("\n\n");
     }
 
-    private void buildTableProperty(JsonString property, StringBuilder sbuilder, String key, final ConcreteTypeRepresentation representation, final boolean hasRequiredColumn) {
+    private void buildTableProperty(JsonString property, StringBuilder sbuilder, String key, final boolean hasRequiredColumn) {
         sbuilder.append("|").append(key).append("\n");
         sbuilder.append("|").append("`").append(property.getString()).append("`").append("\n");
         if (hasRequiredColumn) {
