@@ -65,22 +65,22 @@ class JavaTypeAnalyzer {
      * @return The (root) type identifier
      */
     // TODO consider arrays
-    TypeIdentifier analyze(final String rootType, Map<String, Map<String, String>> javaDoc) {
+    TypeIdentifier analyze(final String rootType, Map<String, Map<String, String>> javaDoc, Set<String> subTypes) {
         final String type = ResponseTypeNormalizer.normalizeResponseWrapper(rootType);
         final TypeIdentifier identifier = TypeIdentifier.ofType(type);
 
         if (!analyzedTypes.contains(type) && (isAssignableTo(type, COLLECTION) || !isJDKType(type))) {
             analyzedTypes.add(type);
-            typeRepresentations.put(identifier, analyzeInternal(identifier, type, javaDoc));
+            typeRepresentations.put(identifier, analyzeInternal(identifier, type, javaDoc, subTypes));
         }
 
         return identifier;
     }
 
-    private TypeRepresentation analyzeInternal(final TypeIdentifier identifier, final String type, Map<String, Map<String, String>> javaDoc) {
+    private TypeRepresentation analyzeInternal(final TypeIdentifier identifier, final String type, Map<String, Map<String, String>> javaDoc, Set<String> subTypes) {
         if (isAssignableTo(type, COLLECTION)) {
             final String containedType = ResponseTypeNormalizer.normalizeCollection(type);
-            return TypeRepresentation.ofCollection(identifier, analyzeInternal(TypeIdentifier.ofType(containedType), containedType, javaDoc));
+            return TypeRepresentation.ofCollection(identifier, analyzeInternal(TypeIdentifier.ofType(containedType), containedType, javaDoc, subTypes));
         }
 
         final Class<?> loadedClass = loadClassFromType(type);
@@ -89,10 +89,10 @@ class JavaTypeAnalyzer {
             return TypeRepresentation.ofEnum(definition, Stream.of(loadedClass.getEnumConstants()).map(o -> (Enum<?>) o).map(Enum::name).toArray(String[]::new));
         }
 
-        return TypeRepresentation.ofConcrete(identifier, analyzeClass(type, loadedClass, javaDoc));
+        return TypeRepresentation.ofConcrete(identifier, analyzeClass(type, loadedClass, javaDoc, subTypes));
     }
 
-    private Map<String, TypeDefinition> analyzeClass(final String type, final Class<?> clazz, Map<String, Map<String, String>> javaDoc) {
+    private Map<String, TypeDefinition> analyzeClass(final String type, final Class<?> clazz, Map<String, Map<String, String>> javaDoc, Set<String> subTypes) {
         if (clazz == null || isJDKType(type)) {
             return Collections.emptyMap();
         }
@@ -107,9 +107,9 @@ class JavaTypeAnalyzer {
         final Map<String, TypeDefinition> properties = new HashMap<>();
 
         final Stream<Class<?>> allSuperTypes = Stream.concat(Stream.of(clazz.getInterfaces()), Stream.of(clazz.getSuperclass()));
-        allSuperTypes.filter(Objects::nonNull).map(Type::getDescriptor).map(t -> analyzeClass(t, loadClassFromType(t), javaDoc)).forEach(properties::putAll);
+        allSuperTypes.filter(Objects::nonNull).map(Type::getDescriptor).map(t -> analyzeClass(t, loadClassFromType(t), javaDoc, subTypes)).forEach(properties::putAll);
 
-        // we have to add the relevant fields and getters of the superclasses
+        // adding relevant fields and getters of superclasses
         final Stream<Class<?>> allSuperTypesForFields = Stream.concat(Stream.of(clazz.getInterfaces()), Stream.of(clazz.getSuperclass()));
         allSuperTypesForFields.map(c -> c.getDeclaredFields()).flatMap(sf -> Arrays.stream(sf)).filter(f -> isRelevant(f, value)).forEach(rf -> relevantFields.add(rf));
         final Stream<Class<?>> allSuperTypesForGetters = Stream.concat(Stream.of(clazz.getInterfaces()), Stream.of(clazz.getSuperclass()));
@@ -124,8 +124,10 @@ class JavaTypeAnalyzer {
             Boolean required = Boolean.valueOf(property.get("required"));
             String description = Objects.nonNull(javaDoc.get(readableType)) ? javaDoc.get(readableType).get(property.get("name")) : null;
             properties.put(property.get("name"), TypeDefinition.of(typeIdent, required, description));
-            analyze(property.get("type"), javaDoc);
+            analyze(property.get("type"), javaDoc, subTypes);
         });
+
+        retrieveSubTypes(type, subTypes).forEach(t -> analyze(JavaUtils.toType(t), javaDoc, subTypes));
 
         return properties;
     }
@@ -264,6 +266,17 @@ class JavaTypeAnalyzer {
         props.put("type", returnType);
         props.put("required", String.valueOf(JavaUtils.isMethodRequired(method)));
         return props;
+    }
+
+    private Set<String> retrieveSubTypes(String type, final Set<String> availableSubTypes) {
+        Class<?> clazz = JavaUtils.loadClassFromType(type.replace('/', '.'));
+        return availableSubTypes.stream().
+                filter(t -> {
+                    Class<?> subclazz = JavaUtils.loadClassFromName(t.replace('/', '.'));
+                    boolean assignable = clazz.isAssignableFrom(subclazz);
+                    return assignable;
+                }).
+                collect(Collectors.toSet());
     }
 
 }

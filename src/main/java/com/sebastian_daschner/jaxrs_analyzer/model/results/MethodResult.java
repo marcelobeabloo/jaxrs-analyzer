@@ -44,6 +44,7 @@ public class MethodResult {
     private String requestBodyType;
     private final Map<String, Map<String, String>> requestBodyDoc = new HashMap<>();
     private final Map<String, Map<String, String>> responseBodyDoc = new HashMap<>();
+    private final Set<String> subTypes = new HashSet<>();
     private MethodIdentifier originalMethodSignature;
     private HttpMethod httpMethod;
     private ClassResult subResource;
@@ -93,6 +94,10 @@ public class MethodResult {
 
     public Map<String, Map<String, String>> getResponseBodyDoc() {
         return responseBodyDoc;
+    }
+
+    public Set<String> getSubTypes() {
+        return subTypes;
     }
 
     public MethodIdentifier getOriginalMethodSignature() {

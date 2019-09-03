@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -77,37 +78,52 @@ public class JavaDocAnalyzer {
             m.setMethodDoc(value);
 
             String requestBodyCleared = JavaUtils.toSpecificClassName(m.getRequestBodyType());
-            addJavadocEntry(requestBodyCleared, m.getRequestBodyDoc());
+            addJavadocEntry(requestBodyCleared, m.getSubTypes(), m.getRequestBodyDoc());
 
             String returnTypeCleared = JavaUtils.toSpecificClassName(m.getOriginalMethodSignature().getReturnType());
-            addJavadocEntry(returnTypeCleared, m.getResponseBodyDoc());
+            addJavadocEntry(returnTypeCleared, m.getSubTypes(), m.getResponseBodyDoc());
         }));
     }
 
-    private void addJavadocEntry(String requestType, Map<String, Map<String, String>> entries) {
+    private void addJavadocEntry(final String requestType, final Set<String> subTypes, final Map<String, Map<String, String>> entries) {
         if (!requestType.isEmpty()) {
             Map<String, String> entryDoc = new HashMap<>();
-            retrieveHierarchy(requestType, new ArrayList<>()).forEach(className -> {
+            retrieveSuperTypes(requestType, new ArrayList<>()).forEach(className -> {
                 Optional.ofNullable(classComments.get(className)).ifPresent(classComment -> {
                     classComment.getFieldComments().forEach(field -> {
                         entryDoc.put(field.getName(), field.getComment());
                         findTypeBestEffort(field.getType()).ifPresent(nestedRequestType -> {
-                            addJavadocEntry(nestedRequestType, entries);
+                            addJavadocEntry(nestedRequestType, subTypes, entries);
                         });
                     });
                 });
+            });
+            retrieveSubTypes(requestType).forEach(subType -> {
+                if (classComments.containsKey(subType)) {
+                    subTypes.add(subType);
+                    addJavadocEntry(subType, subTypes, entries);
+                };
             });
             entries.put(requestType, entryDoc);
         }
     }
 
-    private List<String> retrieveHierarchy(String className, List<String> classNames) {
+    private List<String> retrieveSuperTypes(String className, List<String> classNames) {
         Class<?> clazz = JavaUtils.loadClassFromName(className);
         classNames.add(className.replace('.', '/'));
-        if (Objects.nonNull(clazz.getSuperclass())) {
-            retrieveHierarchy(clazz.getSuperclass().getName(), classNames);
+        if (Objects.nonNull(clazz) && Objects.nonNull(clazz.getSuperclass())) {
+            retrieveSuperTypes(clazz.getSuperclass().getName(), classNames);
         }
         return classNames;
+    }
+
+    private List<String> retrieveSubTypes(String className) {
+        Class<?> clazz = JavaUtils.loadClassFromName(className);
+        return classComments.keySet().stream().
+                filter(cn -> !cn.equals(className)).
+                filter(cn -> clazz.isAssignableFrom(JavaUtils.loadClassFromName(cn))).
+                map(cn -> cn.replace('.', '/')).
+                collect(Collectors.toList());
     }
 
     private MethodResult findMethodResult(final MethodIdentifier identifier, final ClassResult classResult) {

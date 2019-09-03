@@ -115,14 +115,14 @@ public class ResultInterpreter {
         resourceMethod.setOperation(findMethodOperationDoc(methodDoc));
 
         if (methodResult.getRequestBodyType() != null) {
-            resourceMethod.setRequestBody(javaTypeAnalyzer.analyze(methodResult.getRequestBodyType(), methodResult.getRequestBodyDoc()));
+            resourceMethod.setRequestBody(javaTypeAnalyzer.analyze(methodResult.getRequestBodyType(), methodResult.getRequestBodyDoc(), methodResult.getSubTypes()));
             resourceMethod.setRequestBodyDescription(findRequestBodyDescription(methodDoc));
         }
 
         // add default status code due to JSR 339
         addDefaultResponses(methodResult);
 
-        methodResult.getResponses().forEach(r -> interpretResponse(r, resourceMethod, methodResult.getResponseBodyDoc()));
+        methodResult.getResponses().forEach(r -> interpretResponse(r, resourceMethod, methodResult.getResponseBodyDoc(), methodResult.getSubTypes()));
 
         addResponseComments(methodResult, resourceMethod);
 
@@ -233,7 +233,7 @@ public class ResultInterpreter {
                 .forEach(r -> r.getStatuses().add(javax.ws.rs.core.Response.Status.OK.getStatusCode()));
     }
 
-    private void interpretResponse(final HttpResponse httpResponse, final ResourceMethod method, final Map<String, Map<String, String>> responseBodyDoc) {
+    private void interpretResponse(final HttpResponse httpResponse, final ResourceMethod method, final Map<String, Map<String, String>> responseBodyDoc, final Set<String> subTypes) {
         method.getResponseMediaTypes().addAll(httpResponse.getContentTypes());
         httpResponse.getStatuses().forEach(s -> {
             Response response = httpResponse.getInlineEntities().stream().findAny()
@@ -243,7 +243,7 @@ public class ResultInterpreter {
                 // no inline entities -> potential class type will be considered
                 Map<String, Map<String, String>> javadoc = (s == 200) ? responseBodyDoc : Collections.emptyMap();
                 response = httpResponse.getEntityTypes().isEmpty() ? new Response()
-                        : new Response(javaTypeAnalyzer.analyze(JavaUtils.determineMostSpecificType(httpResponse.getEntityTypes().toArray(new String[0])), javadoc));
+                        : new Response(javaTypeAnalyzer.analyze(JavaUtils.determineMostSpecificType(httpResponse.getEntityTypes().toArray(new String[0])), javadoc, subTypes));
             }
 
             response.getHeaders().addAll(httpResponse.getHeaders());

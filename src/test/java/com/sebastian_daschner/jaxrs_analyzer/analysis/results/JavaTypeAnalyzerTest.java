@@ -76,7 +76,7 @@ public class JavaTypeAnalyzerTest {
     public void test() {
         final TypeIdentifier actualIdentifier;
         try {
-            actualIdentifier = classUnderTest.analyze(JavaUtils.toType(testClassName), Collections.emptyMap());
+            actualIdentifier = classUnderTest.analyze(JavaUtils.toType(testClassName), Collections.emptyMap(), Collections.emptySet());
         } catch (Exception e) {
             System.err.println("failed for " + testClassSimpleName);
             throw e;

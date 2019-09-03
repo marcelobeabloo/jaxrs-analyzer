@@ -28,7 +28,7 @@ class StringParameterResolver {
             if (isStringOrPrimitive(p.getType()))
                 return;
 
-            final TypeIdentifier identifier = javaTypeAnalyzer.analyze(p.getType().getType(), Collections.emptyMap());
+            final TypeIdentifier identifier = javaTypeAnalyzer.analyze(p.getType().getType(), Collections.emptyMap(), Collections.emptySet());
             final TypeRepresentation typeRepresentation = typeRepresentations.get(identifier);
 
             if (isEnum(typeRepresentation))
@@ -39,7 +39,7 @@ class StringParameterResolver {
                 if (isStringOrPrimitive(componentType) || isEnum(typeRepresentations.get(componentType)))
                     return;
 
-                p.setType(javaTypeAnalyzer.analyze("Ljava/util/List<Ljava/lang/String;>;", Collections.emptyMap()));
+                p.setType(javaTypeAnalyzer.analyze("Ljava/util/List<Ljava/lang/String;>;", Collections.emptyMap(), Collections.emptySet()));
                 return;
             }
 
